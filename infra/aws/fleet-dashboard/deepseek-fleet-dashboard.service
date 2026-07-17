@@ -1,0 +1,22 @@
+[Unit]
+Description=DeepSeek RTX fleet dashboard
+After=network-online.target tailscaled.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=__INSTALL_USER__
+Environment=HOME=__INSTALL_HOME__
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+Environment=PYTHONDONTWRITEBYTECODE=1
+WorkingDirectory=/opt/deepseek-fleet-dashboard
+ExecStart=/usr/bin/python3 /opt/deepseek-fleet-dashboard/fleet_dashboard.py --host 100.99.146.108 --port 8790
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/var/tmp
+
+[Install]
+WantedBy=multi-user.target
