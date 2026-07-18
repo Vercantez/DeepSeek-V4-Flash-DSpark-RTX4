@@ -18,5 +18,6 @@ ssh "$TARGET" "set -e; \
   sed -e \"s|__INSTALL_USER__|\$user|\" -e \"s|__INSTALL_HOME__|\$home|\" \"\$inbox/deepseek-fleet-dashboard.service\" | \
     sudo tee /etc/systemd/system/deepseek-fleet-dashboard.service >/dev/null; \
   rm -f \"\$inbox/fleet_dashboard.py\" \"\$inbox/deepseek-fleet-dashboard.service\"; \
-  sudo systemctl daemon-reload; sudo systemctl enable --now deepseek-fleet-dashboard.service; \
+  sudo systemctl daemon-reload; sudo systemctl enable deepseek-fleet-dashboard.service; \
+  sudo systemctl restart deepseek-fleet-dashboard.service; \
   sudo systemctl --no-pager --full status deepseek-fleet-dashboard.service"
