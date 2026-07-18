@@ -18,6 +18,15 @@ only permits the known Oregon, Ohio, and Virginia ASGs and validates
 CSRF token protect updates; the dashboard remains reachable only over
 Tailscale.
 
+The purchase-mode selector changes the ASG's future allocation policy:
+
+- `Spot only`: all new instances use Spot.
+- `One On-Demand baseline`: the first desired instance uses On-Demand; any
+  additional desired capacity uses Spot.
+- `On-Demand only`: all new instances use On-Demand.
+
+It does not replace instances that are already running.
+
 ## Install
 
 From this directory, after the `camel-devbox` SSH host entry is available:

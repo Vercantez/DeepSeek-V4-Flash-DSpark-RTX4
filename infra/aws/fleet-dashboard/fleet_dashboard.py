@@ -30,6 +30,11 @@ ROUTER_INSTANCE = "i-0211536fe1c0c464d"
 REFRESH_SECONDS = 20
 CSRF_TOKEN = secrets.token_urlsafe(32)
 FLEETS_BY_NAME = {fleet["name"].lower(): fleet for fleet in FLEETS}
+PURCHASE_MODES = {
+    "spot": ("Spot only", 0, 0),
+    "baseline": ("One On-Demand baseline", 1, 0),
+    "on-demand": ("On-Demand only", 0, 100),
+}
 
 
 def aws(args: list[str], timeout: int = 20) -> str:
@@ -57,12 +62,23 @@ def fleet_status(fleet: dict[str, str]) -> dict[str, Any]:
             }
             for item in group["Instances"]
         ]
+        distribution = group.get("MixedInstancesPolicy", {}).get("InstancesDistribution", {})
+        ondemand_base = distribution.get("OnDemandBaseCapacity", 0)
+        ondemand_percent = distribution.get("OnDemandPercentageAboveBaseCapacity", 0)
+        purchase_mode = next(
+            (name for name, (_, base, percent) in PURCHASE_MODES.items()
+             if (base, percent) == (ondemand_base, ondemand_percent)),
+            "custom",
+        )
         return {
             **fleet,
             "desired": group["DesiredCapacity"],
             "min": group["MinSize"],
             "max": group["MaxSize"],
             "instances": instances,
+            "purchase_mode": purchase_mode,
+            "ondemand_base": ondemand_base,
+            "ondemand_percent": ondemand_percent,
             "error": None,
         }
     except Exception as error:  # Keep the rest of the fleet visible on a partial AWS failure.
@@ -136,6 +152,39 @@ class State:
             cls.updated_at = 0.0
         return cls.get()
 
+    @classmethod
+    def update_purchase_mode(cls, fleet_name: str, mode: str) -> dict[str, Any]:
+        fleet = FLEETS_BY_NAME.get(fleet_name)
+        if not fleet:
+            raise ValueError("unknown fleet")
+        if mode not in PURCHASE_MODES:
+            raise ValueError("unknown purchase mode")
+        raw = aws([
+            "autoscaling", "describe-auto-scaling-groups", "--region", fleet["region"],
+            "--auto-scaling-group-names", fleet["group"], "--output", "json",
+        ])
+        group = json.loads(raw)["AutoScalingGroups"][0]
+        policy = group.get("MixedInstancesPolicy")
+        if not policy:
+            raise ValueError("fleet does not use a mixed-instances policy")
+        specification = policy.get("LaunchTemplate", {}).get("LaunchTemplateSpecification", {})
+        # Describe returns both identifiers, but Update accepts exactly one.
+        if specification.get("LaunchTemplateId"):
+            specification.pop("LaunchTemplateName", None)
+        _, base, percent = PURCHASE_MODES[mode]
+        distribution = policy.setdefault("InstancesDistribution", {})
+        distribution["OnDemandBaseCapacity"] = base
+        distribution["OnDemandPercentageAboveBaseCapacity"] = percent
+        aws([
+            "autoscaling", "update-auto-scaling-group", "--region", fleet["region"],
+            "--auto-scaling-group-name", fleet["group"], "--mixed-instances-policy",
+            json.dumps(policy, separators=(",", ":")),
+        ])
+        with cls.lock:
+            cls.data = None
+            cls.updated_at = 0.0
+        return cls.get()
+
 
 def page(data: dict[str, Any]) -> str:
     cards = []
@@ -152,6 +201,12 @@ def page(data: dict[str, Any]) -> str:
         else:
             detail = '<p class="muted">No instances placed.</p>'
         actual = len(fleet["instances"])
+        mode_options = "".join(
+            f'<option value="{name}"{" selected" if name == fleet.get("purchase_mode") else ""}>{label}</option>'
+            for name, (label, _, _) in PURCHASE_MODES.items()
+        )
+        if fleet.get("purchase_mode") == "custom":
+            mode_options = '<option value="custom" selected>Custom policy (unchanged)</option>' + mode_options
         cards.append(f"""
           <section class="fleet">
             <div class="title"><h2>{html.escape(fleet['name'])}</h2><span class="count">{actual} active</span></div>
@@ -162,6 +217,10 @@ def page(data: dict[str, Any]) -> str:
               <label>Desired <input name="desired" type="number" min="0" max="2" value="{fleet.get('desired', 0)}"></label>
               <label>Max <input name="max" type="number" min="0" max="2" value="{fleet.get('max', 2)}"></label>
               <button type="submit">Apply</button>
+            </form>
+            <form class="purchase-form" data-fleet="{html.escape(fleet['name'].lower())}">
+              <label>Purchase mode <select name="mode">{mode_options}</select></label>
+              <button type="submit">Update mode</button>
             </form>
           </section>""")
     router = data["router"]
@@ -176,7 +235,7 @@ def page(data: dict[str, Any]) -> str:
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="refresh" content="{REFRESH_SECONDS}"><title>DeepSeek Fleet</title>
 <style>
-body{{margin:0;background:#10141b;color:#eef2f7;font:15px system-ui,sans-serif}}main{{max-width:920px;margin:42px auto;padding:0 24px}}h1{{margin:0;font-size:28px}}h2{{margin:0;font-size:18px}}.sub,.muted{{color:#9da8b5}}.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:24px 0}}.fleet,.router{{border:1px solid #2b3544;border-radius:8px;padding:18px;background:#171d27}}.title{{display:flex;justify-content:space-between;gap:12px;align-items:center}}.count{{background:#233c31;color:#a9e6bf;padding:3px 8px;border-radius:4px;font-size:12px}}.capacity{{margin:10px 0 16px;color:#b9c5d2}}ul{{margin:0;padding-left:18px}}li{{margin:8px 0}}code{{color:#b8d6ff;word-break:break-all}}.ok{{color:#a9e6bf}}.error{{color:#ffaca5;white-space:pre-wrap}}footer{{font-size:13px;color:#9da8b5;margin-top:18px}}.capacity-form{{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin-top:18px;padding-top:14px;border-top:1px solid #2b3544}}label{{font-size:12px;color:#b9c5d2;display:grid;gap:4px}}input{{width:45px;background:#10141b;color:#eef2f7;border:1px solid #4a5768;border-radius:4px;padding:6px}}button{{background:#2e79d1;color:white;border:0;border-radius:4px;padding:7px 11px;cursor:pointer}}button:hover{{background:#3c8bea}}</style></head>
+body{{margin:0;background:#10141b;color:#eef2f7;font:15px system-ui,sans-serif}}main{{max-width:920px;margin:42px auto;padding:0 24px}}h1{{margin:0;font-size:28px}}h2{{margin:0;font-size:18px}}.sub,.muted{{color:#9da8b5}}.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:24px 0}}.fleet,.router{{border:1px solid #2b3544;border-radius:8px;padding:18px;background:#171d27}}.title{{display:flex;justify-content:space-between;gap:12px;align-items:center}}.count{{background:#233c31;color:#a9e6bf;padding:3px 8px;border-radius:4px;font-size:12px}}.capacity{{margin:10px 0 16px;color:#b9c5d2}}ul{{margin:0;padding-left:18px}}li{{margin:8px 0}}code{{color:#b8d6ff;word-break:break-all}}.ok{{color:#a9e6bf}}.error{{color:#ffaca5;white-space:pre-wrap}}footer{{font-size:13px;color:#9da8b5;margin-top:18px}}.capacity-form,.purchase-form{{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin-top:18px;padding-top:14px;border-top:1px solid #2b3544}}label{{font-size:12px;color:#b9c5d2;display:grid;gap:4px}}input,select{{background:#10141b;color:#eef2f7;border:1px solid #4a5768;border-radius:4px;padding:6px}}input{{width:45px}}button{{background:#2e79d1;color:white;border:0;border-radius:4px;padding:7px 11px;cursor:pointer}}button:hover{{background:#3c8bea}}</style></head>
 <body><main><h1>DeepSeek RTX Fleet</h1><p class="sub">AWS capacity and router status</p>
 <div class="grid">{''.join(cards)}</div>
 <section class="router"><h2>Router Healthy Backends</h2>{router_html}</section>
@@ -196,6 +255,21 @@ for (const form of document.querySelectorAll('.capacity-form')) {{
       if (!response.ok) throw new Error(result.error || 'update failed');
       location.reload();
     }} catch (error) {{ alert(error.message); button.disabled=false; button.textContent='Apply'; }}
+  }});
+}}
+for (const form of document.querySelectorAll('.purchase-form')) {{
+  form.addEventListener('submit', async (event) => {{
+    event.preventDefault();
+    const fleet=form.dataset.fleet; const mode=new FormData(form).get('mode');
+    if (mode === 'custom') return;
+    if (!confirm(`Set ${{fleet}} to ${{mode}}? This applies only to future launches; it does not replace a running worker.`)) return;
+    const button=form.querySelector('button'); button.disabled=true; button.textContent='Updating...';
+    try {{
+      const response=await fetch(`/api/fleets/${{fleet}}/purchase-mode`, {{method:'POST',headers:{{'content-type':'application/json','x-dashboard-csrf':csrf}},body:JSON.stringify({{mode}})}});
+      const result=await response.json();
+      if (!response.ok) throw new Error(result.error || 'update failed');
+      location.reload();
+    }} catch (error) {{ alert(error.message); button.disabled=false; button.textContent='Update mode'; }}
   }});
 }}
 </script></body></html>"""
@@ -232,7 +306,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self) -> None:  # noqa: N802
         parsed = urllib.parse.urlparse(self.path)
         parts = parsed.path.strip("/").split("/")
-        if len(parts) != 4 or parts[:2] != ["api", "fleets"] or parts[3] != "capacity":
+        if len(parts) != 4 or parts[:2] != ["api", "fleets"] or parts[3] not in {"capacity", "purchase-mode"}:
             self.send_error(HTTPStatus.NOT_FOUND)
             return
         if not secrets.compare_digest(self.headers.get("x-dashboard-csrf", ""), CSRF_TOKEN):
@@ -241,9 +315,12 @@ class Handler(BaseHTTPRequestHandler):
         try:
             length = int(self.headers.get("content-length", "0"))
             payload = json.loads(self.rfile.read(length))
-            data = State.update_capacity(
-                parts[2], int(payload["min"]), int(payload["desired"]), int(payload["max"])
-            )
+            if parts[3] == "capacity":
+                data = State.update_capacity(
+                    parts[2], int(payload["min"]), int(payload["desired"]), int(payload["max"])
+                )
+            else:
+                data = State.update_purchase_mode(parts[2], str(payload["mode"]))
         except (KeyError, TypeError, ValueError) as error:
             self.send_json(HTTPStatus.BAD_REQUEST, {"error": str(error)})
             return
