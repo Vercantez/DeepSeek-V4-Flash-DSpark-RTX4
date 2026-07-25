@@ -68,6 +68,11 @@ sudo -u ubuntu git -C "$repo" fetch --all --prune
 sudo -u ubuntu git -C "$repo" checkout main
 sudo -u ubuntu git -C "$repo" pull --ff-only
 
+# Begin watching IMDS before vLLM accepts traffic. On a Spot interruption or
+# rebalance recommendation, the watcher rejects new connections while allowing
+# established streams to use the remaining notice window.
+"$repo/infra/aws/install-spot-interruption-watcher.sh"
+
 sed -i '/^HF_CACHE=/d; /^MODEL_DIR=/d; /^KV_CACHE_DTYPE=/d; /^KV_OFFLOAD_GB=/d; /^KV_OFFLOAD_DISK_DIR=/d' "$env_file"
 printf '%s\n' \
   "HF_CACHE=$HF_CACHE" \

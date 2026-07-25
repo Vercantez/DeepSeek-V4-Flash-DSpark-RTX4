@@ -34,8 +34,8 @@ fi
 sudo tee /etc/systemd/system/deepseek-rtx4.service >/dev/null <<EOF
 [Unit]
 Description=DeepSeek V4 Flash DSpark RTX4 vLLM service
-After=docker.service network-online.target
-Wants=network-online.target
+After=docker.service network-online.target deepseek-spot-interruption-watcher.service
+Wants=network-online.target deepseek-spot-interruption-watcher.service
 Requires=docker.service
 RequiresMountsFor=$HF_CACHE
 
@@ -59,5 +59,6 @@ curl -fsS --max-time 5 http://127.0.0.1:8000/v1/models >/dev/null
 EOF
 sudo chmod +x /usr/local/bin/deepseek-rtx4-health
 
+sudo "$REPO_DIR/infra/aws/install-spot-interruption-watcher.sh"
 sudo systemctl daemon-reload
 sudo systemctl enable deepseek-rtx4.service

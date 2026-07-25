@@ -6,6 +6,8 @@ This directory contains the prototype deployment shape for serving
 ## Shape
 
 - GPU workers run in an Auto Scaling Group with Spot capacity.
+- An IMDSv2 watcher drains workers on interruption or rebalance notices by
+  rejecting new connections while preserving established streams.
 - Each GPU worker starts `deepseek-rtx4.service`, which runs the tested
   `vllm-dspark-runtime:rtx4-nvfp4-port-v3` container with:
   - `KV_CACHE_DTYPE=fp8_ds_mla`
@@ -87,6 +89,12 @@ termination and rebuilt from S3. Bake the Docker image, repository, and
 systemd unit into the runtime AMI; keep the model artifact immutable and
 regional. This removes EBS snapshot hydration and Fast Snapshot Restore from
 the recovery path.
+
+`deepseek-spot-interruption-watcher.service` polls IMDSv2 every five seconds.
+When `spot/instance-action` or `events/recommendations/rebalance` appears, it
+rejects only new TCP connections to vLLM port 8000. Existing connections keep
+running during the remaining notice window, and the router removes the worker
+when its next health probe fails.
 
 `worker-user-data-s3-nvme.sh` requires `MODEL_ARTIFACT_URI` to be set to an
 immutable release prefix, such as:
