@@ -42,6 +42,14 @@ without a separate measured migration proposal.
 The router only sends a worker traffic after `GET /v1/models` succeeds. An ASG
 instance in `InService` is not necessarily ready while weights load.
 
+Every worker runs `deepseek-spot-interruption-watcher.service`. It polls the
+IMDSv2 Spot interruption and rebalance-recommendation endpoints every five
+seconds. On a notice it installs an iptables rule that rejects only `NEW` TCP
+connections to port 8000. Established streams remain connected for the rest of
+the EC2 notice window, while the router's next health probe removes the worker
+from its healthy set. The marker and reason are recorded in
+`/run/deepseek-rtx4/draining` and in the systemd journal.
+
 Rendezvous hashing keeps a stable `X-Session-ID`, `X-Conversation-ID`,
 `X-Sticky-Key`, or `X-User-ID` on one healthy worker. A missing backend causes
 only its assigned sessions to remap.
@@ -69,11 +77,15 @@ Existing workers retain their current configuration until replacement.
 
 ## Recovery and verification
 
-1. The ASG requests a replacement using its configured Spot allocation policy.
-2. User data stages and verifies the S3 artifact, then starts vLLM.
-3. The router discovery loop probes `/v1/models` and adds the worker only when
-   it is healthy.
-4. Confirm `GET /healthz` and `GET /router/backends` on the router before
+1. The interruption watcher rejects new worker connections; existing streams
+   continue until they finish or EC2 reaches its termination deadline.
+2. The router health loop removes the draining worker and the ASG requests a
+   replacement using its configured Spot allocation policy.
+3. User data stages and verifies the S3 artifact, installs the watcher, then
+   starts vLLM.
+4. The router discovery loop probes `/v1/models` and adds the replacement only
+   when it is healthy.
+5. Confirm `GET /healthz` and `GET /router/backends` on the router before
    moving traffic or declaring capacity recovered.
 
 For a controlled validation, use a temporary on-demand instance only long
