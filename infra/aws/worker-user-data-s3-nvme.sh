@@ -86,7 +86,7 @@ printf '%s\n' \
   "HF_CACHE=$HF_CACHE" \
   "MODEL_DIR=/cache/huggingface/$model_dir_rel" \
   "KV_CACHE_DTYPE=fp8_ds_mla" \
-  "DSPARK_NUM_TOKENS=7" \
+  "DSPARK_NUM_TOKENS=5" \
   "DSPARK_SAMPLE=greedy" >>"$env_file"
 
 # Give new RTX4 workers a durable overflow tier for long-context sessions. The
