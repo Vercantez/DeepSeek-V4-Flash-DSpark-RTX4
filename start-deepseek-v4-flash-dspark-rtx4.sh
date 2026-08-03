@@ -155,6 +155,7 @@ fi
 docker rm -f "$CONTAINER_NAME" >/dev/null 2>&1 || true
 
 docker run -d \
+  --rm \
   --name "$CONTAINER_NAME" \
   --gpus all \
   --runtime nvidia \
