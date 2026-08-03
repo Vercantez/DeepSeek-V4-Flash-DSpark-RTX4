@@ -42,8 +42,11 @@ expected_manifest_hash=$(awk '{print $1}' "$MANIFEST.sha256")
 actual_manifest_hash=$(sha256sum "$MANIFEST" | awk '{print $1}')
 test "$actual_manifest_hash" = "$expected_manifest_hash"
 
-model_rel=$(sed -n 's/.*"model_rel":"\\([^"]*\\)".*/\\1/p' "$ARTIFACT_DIR/artifact.json")
-test -n "$model_rel" && test "$model_rel" != null
+model_rel=$(sed -n 's/.*"model_rel":"\([^"]*\)".*/\1/p' "$ARTIFACT_DIR/artifact.json")
+if [ -z "$model_rel" ] || [ "$model_rel" = null ]; then
+  echo "artifact.json is missing a valid model_rel" >&2
+  exit 1
+fi
 
 # Keep vLLM's runtime cache out of the immutable artifact sync. It can contain
 # Unix sockets while the previous engine is stopped, which makes a broad sync
