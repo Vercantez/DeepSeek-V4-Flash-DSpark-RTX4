@@ -81,11 +81,13 @@ sudo -u ubuntu git -C "$repo" pull --ff-only
 # established streams to use the remaining notice window.
 "$repo/infra/aws/install-spot-interruption-watcher.sh"
 
-sed -i '/^HF_CACHE=/d; /^MODEL_DIR=/d; /^KV_CACHE_DTYPE=/d; /^KV_OFFLOAD_GB=/d; /^KV_OFFLOAD_DISK_DIR=/d' "$env_file"
+sed -i '/^HF_CACHE=/d; /^MODEL_DIR=/d; /^KV_CACHE_DTYPE=/d; /^KV_OFFLOAD_GB=/d; /^KV_OFFLOAD_DISK_DIR=/d; /^DSPARK_MODEL=/d; /^DSPARK_DRAFT_MODEL=/d; /^MTP_NUM_TOKENS=/d; /^DSPARK_NUM_TOKENS=/d; /^DSPARK_SAMPLE=/d' "$env_file"
 printf '%s\n' \
   "HF_CACHE=$HF_CACHE" \
   "MODEL_DIR=/cache/huggingface/$model_dir_rel" \
-  "KV_CACHE_DTYPE=fp8_ds_mla" >>"$env_file"
+  "KV_CACHE_DTYPE=fp8_ds_mla" \
+  "DSPARK_NUM_TOKENS=7" \
+  "DSPARK_SAMPLE=greedy" >>"$env_file"
 
 # Give new RTX4 workers a durable overflow tier for long-context sessions. The
 # primary offload tier is host memory; local NVMe is used after it fills.
