@@ -100,6 +100,13 @@ if [ "$KV_OFFLOAD_GB" -gt 0 ]; then
   install -d -o ubuntu -g ubuntu "$KV_OFFLOAD_DISK_DIR"
 fi
 
+install -d /etc/systemd/system/deepseek-rtx4.service.d
+cat >/etc/systemd/system/deepseek-rtx4.service.d/cleanup-offload.conf <<'EOF'
+[Service]
+# vLLM's host-IPC offload mmap can outlive an interrupted container.
+ExecStartPre=+/bin/sh -c 'rm -f /dev/shm/vllm_offload_*.mmap'
+EOF
+
 systemctl daemon-reload
 systemctl enable deepseek-rtx4.service
 systemctl start deepseek-rtx4.service
