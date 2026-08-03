@@ -49,7 +49,8 @@ test -n "$model_rel" && test "$model_rel" != null
 # Unix sockets while the previous engine is stopped, which makes a broad sync
 # return a nonzero status even after all model files have copied.
 AWS_CRT_S3_MEMORY_LIMIT_IN_GIB=8 \
-  aws s3 sync "$MODEL_ARTIFACT_URI/hf/$model_rel/" "$HF_CACHE/$model_rel/" --only-show-errors
+  aws s3 sync "$MODEL_ARTIFACT_URI/hf/$model_rel/" "$HF_CACHE/$model_rel/" \
+    --exclude 'vllm-cache/*' --only-show-errors
 chown -R ubuntu:ubuntu "$HF_CACHE"
 
 cd "$HF_CACHE"
