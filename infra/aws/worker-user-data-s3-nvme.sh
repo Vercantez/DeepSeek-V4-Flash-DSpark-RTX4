@@ -42,8 +42,14 @@ expected_manifest_hash=$(awk '{print $1}' "$MANIFEST.sha256")
 actual_manifest_hash=$(sha256sum "$MANIFEST" | awk '{print $1}')
 test "$actual_manifest_hash" = "$expected_manifest_hash"
 
+model_rel=$(sed -n 's/.*"model_rel":"\\([^"]*\\)".*/\\1/p' "$ARTIFACT_DIR/artifact.json")
+test -n "$model_rel" && test "$model_rel" != null
+
+# Keep vLLM's runtime cache out of the immutable artifact sync. It can contain
+# Unix sockets while the previous engine is stopped, which makes a broad sync
+# return a nonzero status even after all model files have copied.
 AWS_CRT_S3_MEMORY_LIMIT_IN_GIB=8 \
-  aws s3 sync "$MODEL_ARTIFACT_URI/hf/" "$HF_CACHE/" --only-show-errors
+  aws s3 sync "$MODEL_ARTIFACT_URI/hf/$model_rel/" "$HF_CACHE/$model_rel/" --only-show-errors
 chown -R ubuntu:ubuntu "$HF_CACHE"
 
 cd "$HF_CACHE"
@@ -54,8 +60,6 @@ find "$verify_dir" -type f -print0 | xargs -0 -r -n 1 -P "$VERIFY_JOBS" sha256su
 rm -rf "$verify_dir"
 trap - EXIT
 
-model_rel=$(sed -n 's/.*"model_rel":"\\([^"]*\\)".*/\\1/p' "$ARTIFACT_DIR/artifact.json")
-test -n "$model_rel" && test "$model_rel" != null
 model_dir_rel="$model_rel"
 if [ ! -f "$HF_CACHE/$model_dir_rel/config.json" ]; then
   model_dir_rel=$(find "$HF_CACHE/$model_rel" -mindepth 1 -maxdepth 1 -type d -exec test -f '{}/config.json' \; -print -quit | sed "s#^$HF_CACHE/##")
