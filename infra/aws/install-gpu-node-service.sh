@@ -19,8 +19,8 @@ sudo chown -R ubuntu:ubuntu "$(dirname "$HF_CACHE")"
 
 sudo -u ubuntu cp "$REPO_DIR/.env.rtx4.example" "$REPO_DIR/.env.rtx4"
 sudo -u ubuntu sed -i "s#^HF_CACHE=.*#HF_CACHE=$HF_CACHE#" "$REPO_DIR/.env.rtx4"
-if [ -d "$HF_CACHE/hub/models--deepseek-ai--DeepSeek-V4-Flash-DSpark/snapshots" ]; then
-  snapshot="$(find "$HF_CACHE/hub/models--deepseek-ai--DeepSeek-V4-Flash-DSpark/snapshots" -mindepth 1 -maxdepth 1 -type d | sort | tail -1)"
+if [ -d "$HF_CACHE/hub/models--deepseek-ai--DeepSeek-V4-Flash-0731/snapshots" ]; then
+  snapshot="$(find "$HF_CACHE/hub/models--deepseek-ai--DeepSeek-V4-Flash-0731/snapshots" -mindepth 1 -maxdepth 1 -type d | sort | tail -1)"
   if [ -n "$snapshot" ]; then
     container_snapshot="/cache/huggingface${snapshot#"$HF_CACHE"}"
     if grep -q '^MODEL_DIR=' "$REPO_DIR/.env.rtx4"; then

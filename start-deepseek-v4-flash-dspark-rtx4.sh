@@ -11,7 +11,7 @@ if [ -f "$ENV_FILE" ]; then
   set +a
 fi
 
-: "${DSPARK_MODEL:=deepseek-ai/DeepSeek-V4-Flash-DSpark}"
+: "${DSPARK_MODEL:=deepseek-ai/DeepSeek-V4-Flash-0731}"
 : "${SERVED_MODEL_NAME:=deepseek-v4-flash-dspark}"
 : "${DSPARK_VLLM_IMAGE:=vllm-dspark-runtime:rtx4-nvfp4-port-v3}"
 : "${CONTAINER_NAME:=deepseek-v4-flash-dspark-rtx4}"
@@ -27,8 +27,9 @@ fi
 : "${MAX_NUM_BATCHED_TOKENS:=8192}"
 : "${GPU_MEMORY_UTILIZATION:=0.92}"
 : "${CUDA_GRAPH_CAPTURE_SIZE:=512}"
-: "${MTP_NUM_TOKENS:=5}"
-: "${DSPARK_SAMPLE:=probabilistic}"
+: "${DSPARK_NUM_TOKENS:=${MTP_NUM_TOKENS:-7}}"
+: "${DSPARK_SAMPLE:=greedy}"
+: "${DSPARK_DRAFT_MODEL:=}"
 : "${PREFIX_CACHE:=1}"
 : "${SCHEDULING_POLICY:=priority}"
 : "${PULL_IMAGE:=0}"
@@ -50,7 +51,7 @@ mkdir -p \
 # handing the path to vLLM.
 if [[ "${MODEL_DIR:-}" == /cache/huggingface/* ]] && \
   [ ! -f "$HF_CACHE/${MODEL_DIR#/cache/huggingface/}/config.json" ]; then
-  staged_snapshot=$(find "$HF_CACHE/hub/models--deepseek-ai--DeepSeek-V4-Flash-DSpark/snapshots" \
+  staged_snapshot=$(find "$HF_CACHE/hub/models--deepseek-ai--DeepSeek-V4-Flash-0731/snapshots" \
     -mindepth 1 -maxdepth 1 -type d -exec test -f '{}/config.json' \; -print -quit 2>/dev/null || true)
   if [ -n "$staged_snapshot" ]; then
     MODEL_DIR="/cache/huggingface${staged_snapshot#"$HF_CACHE"}"
@@ -58,7 +59,13 @@ if [[ "${MODEL_DIR:-}" == /cache/huggingface/* ]] && \
 fi
 
 MODEL_ARG="${MODEL_DIR:-$DSPARK_MODEL}"
-SPECULATIVE_CONFIG="$(printf '{"model":"%s","method":"dspark","num_speculative_tokens":%s,"draft_sample_method":"%s"}' "$MODEL_ARG" "$MTP_NUM_TOKENS" "$DSPARK_SAMPLE")"
+# Flash-0731 stores the DSpark drafter in the target checkpoint. The older
+# preview package used a separate draft model, which remains opt-in only for
+# historical checkpoints.
+SPECULATIVE_CONFIG="$(printf '{"method":"dspark","num_speculative_tokens":%s,"draft_sample_method":"%s"}' "$DSPARK_NUM_TOKENS" "$DSPARK_SAMPLE")"
+if [ -n "$DSPARK_DRAFT_MODEL" ]; then
+  SPECULATIVE_CONFIG="$(printf '{"model":"%s","method":"dspark","num_speculative_tokens":%s,"draft_sample_method":"%s"}' "$DSPARK_DRAFT_MODEL" "$DSPARK_NUM_TOKENS" "$DSPARK_SAMPLE")"
+fi
 GENERATION_CONFIG_JSON="$(printf '{"temperature":%s,"top_p":%s,"top_k":%s,"repetition_penalty":%s,"max_tokens":%s}' \
   "${GENERATION_TEMPERATURE:-0.0}" \
   "${GENERATION_TOP_P:-1.0}" \

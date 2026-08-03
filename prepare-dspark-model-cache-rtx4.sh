@@ -11,7 +11,7 @@ if [ -f "$ENV_FILE" ]; then
   set +a
 fi
 
-: "${DSPARK_MODEL:=deepseek-ai/DeepSeek-V4-Flash-DSpark}"
+: "${DSPARK_MODEL:=deepseek-ai/DeepSeek-V4-Flash-0731}"
 : "${DSPARK_VLLM_IMAGE:=vllm-dspark-runtime:rtx4-nvfp4-port-v3}"
 : "${HF_CACHE:=$HOME/.cache/huggingface}"
 : "${HF_DOWNLOAD_WORKERS:=8}"

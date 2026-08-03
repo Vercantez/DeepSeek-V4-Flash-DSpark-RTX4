@@ -1,7 +1,7 @@
 # AWS RTX4 Spot Service
 
 This directory contains the prototype deployment shape for serving
-`DeepSeek-V4-Flash-DSpark` on `g7e.24xlarge` RTX PRO 6000 Blackwell hosts.
+`DeepSeek-V4-Flash-0731` on `g7e.24xlarge` RTX PRO 6000 Blackwell hosts.
 
 ## Shape
 
@@ -116,3 +116,26 @@ MODEL_ARTIFACT_URI=s3://deepseek-rtx4-artifacts-<account>-us-east-2/deepseek-v4-
 
 See `OPERATIONS.md` for the service topology, readiness contract, and recovery
 checks.
+
+## Publishing Flash-0731 weights
+
+Stage the official commit once, then replicate the immutable artifact to each
+worker region. The worker bootstrap deliberately downloads only from S3.
+
+```bash
+ARTIFACT_URI=s3://deepseek-rtx4-artifacts-<account>-us-east-2/deepseek-v4-flash-dspark/2026-07-31-flash-0731 \
+./stage-s3-model-artifact.sh
+```
+
+`artifact.json` is uploaded last, so an interrupted upload is never treated as
+a valid worker release. Flash-0731 includes its DSpark drafter in the target
+checkpoint; the RTX launcher uses the official 7-token greedy DSpark mode.
+
+After staging the source release, copy it to each worker region:
+
+```bash
+SOURCE_ARTIFACT_URI=s3://deepseek-rtx4-artifacts-<account>-us-east-2/deepseek-v4-flash-dspark/2026-07-31-flash-0731 \
+TARGET_ARTIFACT_URI=s3://deepseek-rtx4-artifacts-<account>-us-west-2/deepseek-v4-flash-dspark/2026-07-31-flash-0731 \
+TARGET_REGION=us-west-2 \
+./replicate-s3-model-artifact.sh
+```
