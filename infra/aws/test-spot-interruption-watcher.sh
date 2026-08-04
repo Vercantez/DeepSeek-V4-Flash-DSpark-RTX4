@@ -10,6 +10,9 @@ bash -n "$watcher"
 bash -n "$script_dir/install-spot-interruption-watcher.sh"
 bash -n "$script_dir/install-gpu-node-service.sh"
 bash -n "$script_dir/worker-user-data-s3-nvme.sh"
+bash -n "$script_dir/publish-s3-runtime-cache.sh"
+bash -n "$script_dir/replicate-s3-runtime-cache.sh"
+bash -n "$script_dir/promote-s3-nvme-launch-template.sh"
 
 cat >"$tmp/curl" <<'EOF'
 #!/usr/bin/env bash

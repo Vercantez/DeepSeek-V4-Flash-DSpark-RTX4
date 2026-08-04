@@ -27,8 +27,10 @@ The active launch-template user data is `worker-user-data-s3-nvme.sh`.
 3. It sets `HF_CACHE` and `MODEL_DIR` to the staged NVMe model path.
 4. It starts `deepseek-rtx4.service`.
 
-The S3 release includes weights and reusable vLLM, TorchInductor, Triton, and
-FlashInfer artifacts. Local NVMe is intentionally disposable after an eviction;
+The S3 release includes weights plus an explicitly versioned runtime-cache
+archive containing reusable vLLM, TileLang, TorchInductor, Triton, and
+FlashInfer artifacts. `RUNTIME_CACHE_OBJECT` selects the archive in launch
+template user data. Local NVMe is intentionally disposable after an eviction;
 the regional S3 release is the durable source. The runtime AMI must already
 include Docker, the runtime image, this repository, and the systemd service.
 

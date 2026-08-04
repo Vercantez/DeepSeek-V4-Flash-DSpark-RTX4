@@ -10,6 +10,7 @@ HF_CACHE="$NVME_ROOT/hf"
 ARTIFACT_DIR="$NVME_ROOT/artifact"
 MANIFEST="$ARTIFACT_DIR/manifest.sha256"
 VERIFY_JOBS=${VERIFY_JOBS:-8}
+RUNTIME_CACHE_OBJECT=${RUNTIME_CACHE_OBJECT:-}
 
 if ! command -v aws >/dev/null; then
   apt-get update -y
@@ -54,6 +55,21 @@ fi
 AWS_CRT_S3_MEMORY_LIMIT_IN_GIB=8 \
   aws s3 sync "$MODEL_ARTIFACT_URI/hf/$model_rel/" "$HF_CACHE/$model_rel/" \
     --exclude 'vllm-cache/*' --only-show-errors
+
+# Compiled SM120 artifacts are release- and runtime-specific. Restore the
+# explicitly selected immutable archive before vLLM starts; a missing or
+# corrupt configured archive is a bootstrap failure rather than a slow,
+# silently recompiling worker.
+if [ -n "$RUNTIME_CACHE_OBJECT" ]; then
+  runtime_cache_archive="$ARTIFACT_DIR/$(basename "$RUNTIME_CACHE_OBJECT")"
+  aws s3 cp "$MODEL_ARTIFACT_URI/$RUNTIME_CACHE_OBJECT" "$runtime_cache_archive" --only-show-errors
+  aws s3 cp "$MODEL_ARTIFACT_URI/$RUNTIME_CACHE_OBJECT.sha256" "$runtime_cache_archive.sha256" --only-show-errors
+  (
+    cd "$ARTIFACT_DIR"
+    sha256sum --quiet -c "$(basename "$runtime_cache_archive").sha256"
+  )
+  tar --zstd -xf "$runtime_cache_archive" -C "$HF_CACHE"
+fi
 chown -R ubuntu:ubuntu "$HF_CACHE"
 
 cd "$HF_CACHE"

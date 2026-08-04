@@ -79,10 +79,12 @@ authority for hard context validation.
 ## Worker Startup
 
 The active startup path uses a versioned, regional S3 artifact rather than a
-model EBS snapshot. The artifact contains the dereferenced model snapshot,
-vLLM compile cache, FlashInfer cache, and a SHA-256 manifest. Worker user data
-downloads it to `/opt/dlami/nvme/deepseek-model`, validates the manifest, then
-points `HF_CACHE` at that local NVMe path before starting vLLM.
+model EBS snapshot. The artifact contains the dereferenced model snapshot and
+an optional, explicitly versioned runtime-cache archive. Worker user data
+downloads both to `/opt/dlami/nvme/deepseek-model`, validates their SHA-256
+checksums, then points `HF_CACHE` at that local NVMe path before starting vLLM.
+The runtime archive contains vLLM, TileLang, TorchInductor, Triton, and
+FlashInfer artifacts produced by a fully warmed SM120 worker.
 
 The local NVMe cache is intentionally ephemeral: it is discarded on Spot
 termination and rebuilt from S3. Bake the Docker image, repository, and
@@ -111,7 +113,17 @@ volume mapping, and promotes the new version:
 REGION=us-east-2 \
 LAUNCH_TEMPLATE_ID=lt-... \
 MODEL_ARTIFACT_URI=s3://deepseek-rtx4-artifacts-<account>-us-east-2/deepseek-v4-flash-dspark/<release> \
+RUNTIME_CACHE_OBJECT=runtime-cache/0731-sm120-v1.tar.zst \
 ./promote-s3-nvme-launch-template.sh
+```
+
+After the first worker for a new model/runtime combination reports ready,
+publish its cache once and promote that immutable object in every region:
+
+```bash
+ARTIFACT_URI=s3://deepseek-rtx4-artifacts-<account>-us-east-2/deepseek-v4-flash-dspark/<release> \
+RUNTIME_CACHE_OBJECT=runtime-cache/0731-sm120-v1.tar.zst \
+./publish-s3-runtime-cache.sh
 ```
 
 See `OPERATIONS.md` for the service topology, readiness contract, and recovery
@@ -138,4 +150,15 @@ SOURCE_ARTIFACT_URI=s3://deepseek-rtx4-artifacts-<account>-us-east-2/deepseek-v4
 TARGET_ARTIFACT_URI=s3://deepseek-rtx4-artifacts-<account>-us-west-2/deepseek-v4-flash-dspark/2026-07-31-flash-0731 \
 TARGET_REGION=us-west-2 \
 ./replicate-s3-model-artifact.sh
+```
+
+Runtime caches are published after the model release already exists. Replicate
+them separately without rewriting the model artifact:
+
+```bash
+SOURCE_ARTIFACT_URI=s3://deepseek-rtx4-artifacts-<account>-us-east-2/deepseek-v4-flash-dspark/2026-07-31-flash-0731 \
+TARGET_ARTIFACT_URI=s3://deepseek-rtx4-artifacts-<account>-us-west-2/deepseek-v4-flash-dspark/2026-07-31-flash-0731 \
+TARGET_REGION=us-west-2 \
+RUNTIME_CACHE_OBJECT=runtime-cache/0731-sm120-v1.tar.zst \
+./replicate-s3-runtime-cache.sh
 ```

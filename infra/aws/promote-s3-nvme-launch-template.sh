@@ -12,6 +12,9 @@ trap 'rm -f "$user_data_file" "$template_data_file"' EXIT
 
 head -n 1 "$script_dir/worker-user-data-s3-nvme.sh" >"$user_data_file"
 printf 'MODEL_ARTIFACT_URI=%q\n' "$MODEL_ARTIFACT_URI" >>"$user_data_file"
+if [ -n "${RUNTIME_CACHE_OBJECT:-}" ]; then
+  printf 'RUNTIME_CACHE_OBJECT=%q\n' "$RUNTIME_CACHE_OBJECT" >>"$user_data_file"
+fi
 tail -n +2 "$script_dir/worker-user-data-s3-nvme.sh" >>"$user_data_file"
 user_data=$(base64 <"$user_data_file" | tr -d '\n')
 
@@ -29,7 +32,7 @@ version=$(aws ec2 create-launch-template-version \
   --region "$REGION" \
   --launch-template-id "$LAUNCH_TEMPLATE_ID" \
   --source-version '$Default' \
-  --version-description 'stage-model-from-s3-to-local-nvme' \
+  --version-description 'stage-model-and-runtime-cache-from-s3-to-local-nvme' \
   --launch-template-data "file://$template_data_file" \
   --query 'LaunchTemplateVersion.VersionNumber' \
   --output text)
