@@ -152,7 +152,13 @@ fi
 if [ "$PULL_IMAGE" = "1" ]; then
   docker pull "$DSPARK_VLLM_IMAGE"
 fi
-docker rm -f "$CONTAINER_NAME" >/dev/null 2>&1 || true
+if docker container inspect "$CONTAINER_NAME" >/dev/null 2>&1; then
+  docker rm -f "$CONTAINER_NAME" >/dev/null
+fi
+if docker container inspect "$CONTAINER_NAME" >/dev/null 2>&1; then
+  echo "Failed to remove existing container: $CONTAINER_NAME" >&2
+  exit 1
+fi
 
 docker run -d \
   --name "$CONTAINER_NAME" \

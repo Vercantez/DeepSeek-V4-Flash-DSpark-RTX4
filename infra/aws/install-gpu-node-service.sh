@@ -46,6 +46,7 @@ WorkingDirectory=$REPO_DIR
 Environment=ENV_FILE=$REPO_DIR/.env.rtx4
 ExecStartPre=+/bin/sh -c 'rm -f /dev/shm/vllm_offload_*.mmap'
 ExecStart=$REPO_DIR/start-deepseek-v4-flash-dspark-rtx4.sh
+ExecStop=-/usr/bin/docker rm -f deepseek-v4-flash-dspark-rtx4
 RemainAfterExit=yes
 TimeoutStartSec=1800
 

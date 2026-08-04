@@ -121,6 +121,7 @@ cat >/etc/systemd/system/deepseek-rtx4.service.d/cleanup-offload.conf <<'EOF'
 [Service]
 # vLLM's host-IPC offload mmap can outlive an interrupted container.
 ExecStartPre=+/bin/sh -c 'rm -f /dev/shm/vllm_offload_*.mmap'
+ExecStop=-/usr/bin/docker rm -f deepseek-v4-flash-dspark-rtx4
 EOF
 
 systemctl daemon-reload
