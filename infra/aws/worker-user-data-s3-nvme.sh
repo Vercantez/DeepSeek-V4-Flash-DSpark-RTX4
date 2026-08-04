@@ -88,9 +88,11 @@ test -n "$model_dir_rel" && test -f "$HF_CACHE/$model_dir_rel/config.json"
 
 repo=/opt/deepseek/mia-dspark-rtx4
 env_file="$repo/.env.rtx4"
-sudo -u ubuntu git -C "$repo" fetch --all --prune
+: "${REPO_URL:=https://github.com/Vercantez/DeepSeek-V4-Flash-DSpark-RTX4}"
+sudo -u ubuntu git -C "$repo" remote set-url origin "$REPO_URL"
+sudo -u ubuntu git -C "$repo" fetch origin --prune
 sudo -u ubuntu git -C "$repo" checkout main
-sudo -u ubuntu git -C "$repo" pull --ff-only
+sudo -u ubuntu git -C "$repo" pull --ff-only origin main
 
 # Begin watching IMDS before vLLM accepts traffic. On a Spot interruption or
 # rebalance recommendation, the watcher rejects new connections while allowing

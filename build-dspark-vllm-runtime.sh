@@ -43,7 +43,7 @@ build_one() {
       -t "$DSPARK_VLLM_IMAGE" \
       "$SCRIPT_DIR"
     docker run --rm --entrypoint /opt/env/bin/python "$DSPARK_VLLM_IMAGE" -c \
-      "import vllm; print('dspark nvfp4 stage-c image ok', vllm.__version__)"
+      "import vllm; import vllm.entrypoints.anthropic.api_router; import vllm.entrypoints.openai.responses.api_router; print('dspark nvfp4 stage-c image and native agent APIs ok', vllm.__version__)"
   else
     ssh "$host" "mkdir -p '$checkout'"
     rsync -az --delete "$SCRIPT_DIR/" "$host:$checkout/"

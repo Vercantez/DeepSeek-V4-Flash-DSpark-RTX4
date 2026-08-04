@@ -6,7 +6,7 @@ HF_CACHE="${HF_CACHE:-/opt/deepseek-cache/hf}"
 
 if [ ! -d "$REPO_DIR" ]; then
   sudo mkdir -p "$(dirname "$REPO_DIR")"
-  sudo git clone https://github.com/Vercantez/DeepSeek-V4-Flash-DSpark-RTX4-NVFP4 "$REPO_DIR"
+  sudo git clone https://github.com/Vercantez/DeepSeek-V4-Flash-DSpark-RTX4 "$REPO_DIR"
 fi
 
 sudo chown -R ubuntu:ubuntu "$REPO_DIR"

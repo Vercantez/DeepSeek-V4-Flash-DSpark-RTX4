@@ -16,7 +16,16 @@ This directory contains the prototype deployment shape for serving
   - `MAX_NUM_BATCHED_TOKENS=8192`
 - A small on-demand router node runs `deepseek-sticky-router.service`.
 - The router discovers healthy ASG workers through AWS APIs and forwards
-  OpenAI-compatible traffic to `http://<worker-private-ip>:8000`.
+  vLLM's native OpenAI and Anthropic traffic to
+  `http://<worker-private-ip>:8000`.
+
+The deployed vLLM server exposes these agent-facing endpoints without a
+protocol translation layer:
+
+- `POST /v1/chat/completions`
+- `POST /v1/responses`
+- `POST /v1/messages`
+- `POST /v1/messages/count_tokens`
 
 For multi-region workers, set `AWS_ASG_TARGETS` on the router. It accepts a
 comma-separated list of `region:auto-scaling-group` values, for example:
@@ -40,10 +49,14 @@ to keep a user/session/conversation on the same GPU host:
 - `X-Conversation-ID`
 - `X-User-ID`
 
-If no sticky header exists, the router falls back to the OpenAI `user` JSON
-field, then the first message prefix, then the `Authorization` header. Explicit
-sticky headers are preferred because they avoid accidentally grouping many users
-behind one API key.
+If no sticky header exists, the router uses the protocol's stable identifiers
+(`user`, Anthropic `metadata.user_id`, or Responses `prompt_cache_key`) before
+hashing the first user message and finally the `Authorization` header. It skips
+shared system/developer prompts so coding-agent traffic does not collapse onto
+one GPU. For stored Responses requests, the router gives the first request a
+vLLM `request_id`; a later `previous_response_id` hashes to the same worker
+without keeping router-local affinity state. Explicit sticky headers remain the
+most reliable option for custom clients.
 
 Health endpoints:
 
@@ -55,14 +68,18 @@ Health endpoints:
 
 AI Gateway must send vLLM priority as the `X-Chiridion-VLLM-Priority` request
 header, not as a JSON body field. The sticky router consumes the header,
-clamps it to `0..1000`, and adds vLLM's OpenAI-compatible `priority` field only
-for the selected self-hosted worker. This keeps Azure and OpenRouter fallbacks
-free of a vLLM-only request parameter. Lower values run first; use `0` for paid
-traffic and `100` for free traffic.
+clamps it to `0..1000`, and adds vLLM's `priority` field to Chat Completions and
+Responses requests only after selecting the self-hosted route. Anthropic
+Messages does not accept that vLLM extension. This keeps Azure and OpenRouter
+fallbacks free of a vLLM-only request parameter. Lower values run first; use
+`0` for paid traffic and `100` for free traffic.
 
 ## Model Contract
 
-The router does not rewrite a request based on `/tokenize`: vLLM's tokenizer
+The router maps the shared default/output guardrails to each native schema:
+`max_tokens` for Chat Completions and Anthropic Messages, and
+`max_output_tokens` for Responses. It does not rewrite a request based on
+`/tokenize`: vLLM's tokenizer
 endpoint and its final chat-generation validation can account for templates
 differently. Instead, the deployed model contract is explicit:
 

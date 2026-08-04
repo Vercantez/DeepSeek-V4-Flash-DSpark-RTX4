@@ -55,7 +55,7 @@ chmod 0600 /etc/deepseek-router.env
 
 cat >/etc/systemd/system/deepseek-sticky-router.service <<'EOF'
 [Unit]
-Description=Sticky OpenAI-compatible router for DeepSeek RTX4 GPU backends
+Description=Sticky OpenAI and Anthropic router for DeepSeek RTX4 GPU backends
 After=network-online.target
 Wants=network-online.target
 
