@@ -106,8 +106,10 @@ s3://deepseek-rtx4-artifacts-<account>-us-east-2/deepseek-v4-flash-dspark/<relea
 ```
 
 Use `promote-s3-nvme-launch-template.sh` to create a new launch-template
-version. It embeds `worker-user-data-s3-nvme.sh`, removes the obsolete cache
-volume mapping, and promotes the new version:
+version. It embeds `worker-user-data-s3-nvme.sh`, explicitly suppresses the
+AMI's obsolete `/dev/sdf` cache-volume mapping with `NoDevice`, and promotes
+the new version. Deleting the mapping from the launch-template JSON is not
+enough because EC2 then inherits the AMI mapping:
 
 ```bash
 REGION=us-east-2 \
