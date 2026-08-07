@@ -25,7 +25,10 @@ aws ec2 describe-launch-template-versions \
   --query 'LaunchTemplateVersions[0].LaunchTemplateData' \
   --output json |
   jq --arg user_data "$user_data" \
-    'del(.BlockDeviceMappings[]? | select(.DeviceName == "/dev/sdf")) | .UserData = $user_data' \
+    '.BlockDeviceMappings = (
+      [(.BlockDeviceMappings // [])[] | select(.DeviceName != "/dev/sdf")]
+      + [{"DeviceName": "/dev/sdf", "NoDevice": ""}]
+    ) | .UserData = $user_data' \
     >"$template_data_file"
 
 version=$(aws ec2 create-launch-template-version \

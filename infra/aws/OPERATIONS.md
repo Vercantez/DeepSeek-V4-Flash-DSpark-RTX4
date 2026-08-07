@@ -35,9 +35,11 @@ the regional S3 release is the durable source. The runtime AMI must already
 include Docker, the runtime image, this repository, and the systemd service.
 
 Use `promote-s3-nvme-launch-template.sh` for launch-template updates. It
-embeds the S3/NVMe user data and removes the legacy model-cache EBS mapping.
-Do not reintroduce snapshot-backed model volumes or Fast Snapshot Restore
-without a separate measured migration proposal.
+embeds the S3/NVMe user data and suppresses the legacy model-cache EBS mapping
+with an explicit `NoDevice` override. Omitting `/dev/sdf` from the launch
+template makes EC2 inherit the AMI's snapshot-backed volume instead. Do not
+reintroduce snapshot-backed model volumes or Fast Snapshot Restore without a
+separate measured migration proposal.
 
 ## Routing, cache affinity, and priority
 

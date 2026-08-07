@@ -13,6 +13,9 @@ bash -n "$script_dir/worker-user-data-s3-nvme.sh"
 bash -n "$script_dir/publish-s3-runtime-cache.sh"
 bash -n "$script_dir/replicate-s3-runtime-cache.sh"
 bash -n "$script_dir/promote-s3-nvme-launch-template.sh"
+bash -n "$script_dir/test-promote-s3-nvme-launch-template.sh"
+
+"$script_dir/test-promote-s3-nvme-launch-template.sh"
 
 cat >"$tmp/curl" <<'EOF'
 #!/usr/bin/env bash
