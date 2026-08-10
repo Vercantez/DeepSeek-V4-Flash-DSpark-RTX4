@@ -202,5 +202,28 @@ class ResponseSocketTimeoutTests(unittest.TestCase):
         self.assertEqual(sock.timeout, 900)
 
 
+class AdmissionControllerTests(unittest.TestCase):
+    def test_rejects_large_request_without_consuming_capacity(self):
+        admission = router.AdmissionController(max_request_bytes=100, max_inflight=1)
+
+        self.assertEqual(admission.try_acquire(101), "request_too_large")
+        self.assertEqual(admission.active(), 0)
+        self.assertIsNone(admission.try_acquire(100))
+        admission.release()
+
+    def test_rejects_instead_of_queueing_when_capacity_is_full(self):
+        admission = router.AdmissionController(max_request_bytes=0, max_inflight=2)
+
+        self.assertIsNone(admission.try_acquire(1_000_000))
+        self.assertIsNone(admission.try_acquire(1_000_000))
+        self.assertEqual(admission.try_acquire(1), "capacity")
+        self.assertEqual(admission.active(), 2)
+        admission.release()
+        self.assertIsNone(admission.try_acquire(1))
+        admission.release()
+        admission.release()
+        self.assertEqual(admission.active(), 0)
+
+
 if __name__ == "__main__":
     unittest.main()

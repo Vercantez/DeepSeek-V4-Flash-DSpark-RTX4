@@ -110,6 +110,12 @@ DISCOVERY_INTERVAL = env_int("DISCOVERY_INTERVAL", 15)
 HEALTH_TIMEOUT = env_int("HEALTH_TIMEOUT", 3)
 REQUEST_TIMEOUT = env_int("REQUEST_TIMEOUT", 900)
 TTFT_TIMEOUT = env_int("TTFT_TIMEOUT", 20)
+# Reject work before it reaches vLLM when it cannot plausibly produce a first
+# token inside the fallback window. The byte cap is deliberately a routing
+# heuristic, not a model context limit: AI Gateway can send rejected requests
+# to another provider while the RTX backend keeps its native 1M context.
+MAX_ADMITTED_REQUEST_BYTES = env_int("MAX_ADMITTED_REQUEST_BYTES", 131_072)
+MAX_INFLIGHT_REQUESTS = env_int("MAX_INFLIGHT_REQUESTS", 8)
 MODEL_ID = os.environ.get("MODEL_ID", "deepseek-v4-flash-dspark")
 MODEL_MAX_CONTEXT_TOKENS = env_int("MODEL_MAX_CONTEXT_TOKENS", 1_048_576)
 MODEL_WORKING_CONTEXT_TOKENS = env_int("MODEL_WORKING_CONTEXT_TOKENS", 1_048_576)
@@ -147,10 +153,46 @@ if MIN_VLLM_PRIORITY > MAX_VLLM_PRIORITY:
     raise ValueError("MIN_VLLM_PRIORITY cannot exceed MAX_VLLM_PRIORITY")
 if TTFT_TIMEOUT <= 0:
     raise ValueError("TTFT_TIMEOUT must be positive")
+if MAX_ADMITTED_REQUEST_BYTES < 0:
+    raise ValueError("MAX_ADMITTED_REQUEST_BYTES cannot be negative")
+if MAX_INFLIGHT_REQUESTS <= 0:
+    raise ValueError("MAX_INFLIGHT_REQUESTS must be positive")
 
 
 class BackendTTFTTimeout(TimeoutError):
     """The backend accepted a streaming request but produced no body in time."""
+
+
+class AdmissionController:
+    """Bound work admitted to vLLM without creating another wait queue."""
+
+    def __init__(self, max_request_bytes: int, max_inflight: int):
+        self.max_request_bytes = max_request_bytes
+        self.max_inflight = max_inflight
+        self._slots = threading.BoundedSemaphore(max_inflight)
+        self._lock = threading.Lock()
+        self._active = 0
+
+    def try_acquire(self, request_bytes: int) -> str | None:
+        if self.max_request_bytes and request_bytes > self.max_request_bytes:
+            return "request_too_large"
+        if not self._slots.acquire(blocking=False):
+            return "capacity"
+        with self._lock:
+            self._active += 1
+        return None
+
+    def release(self) -> None:
+        with self._lock:
+            self._active -= 1
+        self._slots.release()
+
+    def active(self) -> int:
+        with self._lock:
+            return self._active
+
+
+ADMISSION = AdmissionController(MAX_ADMITTED_REQUEST_BYTES, MAX_INFLIGHT_REQUESTS)
 
 
 def set_response_socket_timeout(
@@ -493,6 +535,9 @@ def router_capabilities() -> dict[str, int | str]:
         "max_context_tokens": MODEL_MAX_CONTEXT_TOKENS,
         "working_context_tokens": MODEL_WORKING_CONTEXT_TOKENS,
         "max_output_tokens": MODEL_MAX_OUTPUT_TOKENS,
+        "max_admitted_request_bytes": ADMISSION.max_request_bytes,
+        "max_inflight_requests": ADMISSION.max_inflight,
+        "active_requests": ADMISSION.active(),
     }
 
 
@@ -533,6 +578,7 @@ class RouterHandler(BaseHTTPRequestHandler):
     def proxy(self) -> None:
         content_length = int(self.headers.get("content-length") or 0)
         body = self.rfile.read(content_length) if content_length else b""
+        request_bytes = len(body)
         body = apply_request_defaults(self.path, self.headers, body)
         body = normalize_content_parts_for_vllm(self.path, self.headers, body)
 
@@ -546,6 +592,7 @@ class RouterHandler(BaseHTTPRequestHandler):
         if not backend:
             self.send_json(503, {"error": "no healthy GPU backend"})
             return
+
         body = align_response_id_affinity(self.path, self.headers, body, backend)
 
         parsed = urllib.parse.urlparse(backend)
@@ -565,6 +612,29 @@ class RouterHandler(BaseHTTPRequestHandler):
         headers["x-forwarded-for"] = self.client_address[0]
         headers["x-routed-backend"] = backend
         downstream_started = False
+
+        rejection = ADMISSION.try_acquire(request_bytes)
+        if rejection is not None:
+            if rejection == "request_too_large":
+                message = (
+                    f"RTX admission limit is {ADMISSION.max_request_bytes} request bytes; "
+                    "retry on the configured fallback"
+                )
+                code = "rtx_request_too_large"
+            else:
+                message = "RTX backend is at its active-request limit; retry on the configured fallback"
+                code = "rtx_at_capacity"
+            self.send_json(
+                503,
+                {
+                    "error": {
+                        "message": message,
+                        "type": "server_overloaded",
+                        "code": code,
+                    }
+                },
+            )
+            return
 
         try:
             conn.request(self.command, self.path, body=body, headers=headers)
@@ -641,6 +711,7 @@ class RouterHandler(BaseHTTPRequestHandler):
                 self.send_json(502, {"error": f"backend proxy failed: {exc}"})
         finally:
             conn.close()
+            ADMISSION.release()
 
 
 def main() -> None:

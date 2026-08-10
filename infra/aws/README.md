@@ -100,6 +100,14 @@ to fall back without leaving the timed-out generation queued on the GPU
 worker. Keep the AI Gateway model-node timeout above this router-owned
 deadline.
 
+The router also rejects work before vLLM admission when the serialized request
+is larger than `MAX_ADMITTED_REQUEST_BYTES` (default `131072`) or when
+`MAX_INFLIGHT_REQUESTS` (default `8`) requests are already active. These are
+fast `503` responses intended to activate the AI Gateway fallback without
+polluting vLLM's queue or KV spill tier. They are routing controls, not context
+limits: the RTX model retains its native context window, and setting the byte
+limit to `0` disables only the size-based admission check.
+
 ## Worker Startup
 
 The active startup path uses a versioned, regional S3 artifact rather than a
