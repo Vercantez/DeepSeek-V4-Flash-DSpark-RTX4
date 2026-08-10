@@ -93,7 +93,7 @@ BACKEND_ARGS=()
 BACKEND_ENV=()
 case "$BACKEND" in
   b12x)
-    BACKEND_ARGS=(--attention-backend B12X_MLA_SPARSE --moe-backend b12x --linear-backend b12x)
+    BACKEND_ARGS=(--attention-backend B12X_MLA_SPARSE --moe-backend b12x --linear-backend b12x --disable-custom-all-reduce)
     BACKEND_ENV=(
       -e VLLM_USE_B12X_WO_PROJECTION=1
       -e VLLM_USE_B12X_MHC=1
