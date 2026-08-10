@@ -568,7 +568,12 @@ class RouterHandler(BaseHTTPRequestHandler):
 
         try:
             conn.request(self.command, self.path, body=body, headers=headers)
-            response = conn.getresponse()
+            if conn.sock is not None:
+                conn.sock.settimeout(TTFT_TIMEOUT)
+            try:
+                response = conn.getresponse()
+            except (TimeoutError, socket.timeout) as exc:
+                raise BackendTTFTTimeout from exc
             response_headers = response.getheaders()
             content_type = ""
             for key, value in response_headers:
@@ -576,9 +581,10 @@ class RouterHandler(BaseHTTPRequestHandler):
                     content_type = value.lower()
 
             # vLLM sends SSE headers before a queued request begins decoding.
-            # Wait for the first actual event so this router owns the TTFT
-            # deadline. Closing the upstream socket on timeout lets vLLM abort
-            # the queued generation before AI Gateway invokes another model.
+            # Keep the header deadline in force through the first actual event
+            # so this router owns TTFT. Closing the upstream socket on timeout
+            # lets vLLM abort the queued generation before AI Gateway invokes
+            # another model.
             first_body_byte = b""
             if response.status < 400 and content_type.startswith("text/event-stream"):
                 set_response_socket_timeout(conn, response, TTFT_TIMEOUT)
@@ -588,6 +594,8 @@ class RouterHandler(BaseHTTPRequestHandler):
                     raise BackendTTFTTimeout from exc
                 finally:
                     set_response_socket_timeout(conn, response, REQUEST_TIMEOUT)
+            else:
+                set_response_socket_timeout(conn, response, REQUEST_TIMEOUT)
 
             self.send_response(response.status, response.reason)
             for key, value in response_headers:
