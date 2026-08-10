@@ -1,0 +1,12 @@
+ARG BASE_IMAGE=vllm/vllm-openai:v0.25.1
+FROM ${BASE_IMAGE}
+
+# Hermia's validated SM120 recipe is stock vLLM 0.25.1 with only the
+# FlashInfer wheel updated to 0.6.14. No vLLM source patches are applied.
+# Keep the base image's 0.6.13 cubin: PyPI has no 0.6.14 cubin release, and
+# FLASHINFER_DISABLE_VERSION_CHECK is the upstream recipe's required bridge.
+RUN uv pip install --system --upgrade --no-deps --no-cache \
+        "flashinfer-python==0.6.14" \
+    && python3 -c 'from importlib.metadata import version; assert version("vllm") == "0.25.1"; assert version("flashinfer-python") == "0.6.14"; assert version("flashinfer-cubin") == "0.6.13"'
+
+ENV FLASHINFER_DISABLE_VERSION_CHECK=1
