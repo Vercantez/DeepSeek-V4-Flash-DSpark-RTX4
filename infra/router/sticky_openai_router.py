@@ -12,6 +12,7 @@ import hashlib
 import http.client
 import json
 import os
+import socket
 import subprocess
 import threading
 import time
@@ -108,6 +109,7 @@ BACKEND_PORT = env_int("BACKEND_PORT", 8000)
 DISCOVERY_INTERVAL = env_int("DISCOVERY_INTERVAL", 15)
 HEALTH_TIMEOUT = env_int("HEALTH_TIMEOUT", 3)
 REQUEST_TIMEOUT = env_int("REQUEST_TIMEOUT", 900)
+TTFT_TIMEOUT = env_int("TTFT_TIMEOUT", 20)
 MODEL_ID = os.environ.get("MODEL_ID", "deepseek-v4-flash-dspark")
 MODEL_MAX_CONTEXT_TOKENS = env_int("MODEL_MAX_CONTEXT_TOKENS", 1_048_576)
 MODEL_WORKING_CONTEXT_TOKENS = env_int("MODEL_WORKING_CONTEXT_TOKENS", 1_048_576)
@@ -143,6 +145,27 @@ if MODEL_MAX_OUTPUT_TOKENS > MODEL_MAX_CONTEXT_TOKENS:
     raise ValueError("MODEL_MAX_OUTPUT_TOKENS cannot exceed MODEL_MAX_CONTEXT_TOKENS")
 if MIN_VLLM_PRIORITY > MAX_VLLM_PRIORITY:
     raise ValueError("MIN_VLLM_PRIORITY cannot exceed MAX_VLLM_PRIORITY")
+if TTFT_TIMEOUT <= 0:
+    raise ValueError("TTFT_TIMEOUT must be positive")
+
+
+class BackendTTFTTimeout(TimeoutError):
+    """The backend accepted a streaming request but produced no body in time."""
+
+
+def set_response_socket_timeout(
+    conn: http.client.HTTPConnection,
+    response: http.client.HTTPResponse,
+    timeout: int,
+) -> None:
+    """Set the socket deadline even when http.client detached it from conn."""
+    response_socket = conn.sock
+    if response_socket is None:
+        response_buffer = getattr(response, "fp", None)
+        raw_socket = getattr(response_buffer, "raw", None)
+        response_socket = getattr(raw_socket, "_sock", None)
+    if response_socket is not None:
+        response_socket.settimeout(timeout)
 
 
 def normalize_backend(value: str) -> str:
@@ -541,22 +564,43 @@ class RouterHandler(BaseHTTPRequestHandler):
             headers["content-length"] = str(len(body))
         headers["x-forwarded-for"] = self.client_address[0]
         headers["x-routed-backend"] = backend
+        downstream_started = False
 
         try:
             conn.request(self.command, self.path, body=body, headers=headers)
             response = conn.getresponse()
-            self.send_response(response.status, response.reason)
             response_headers = response.getheaders()
             content_type = ""
             for key, value in response_headers:
-                if key.lower() not in HOP_BY_HOP_HEADERS:
-                    self.send_header(key, value)
                 if key.lower() == "content-type":
                     content_type = value.lower()
+
+            # vLLM sends SSE headers before a queued request begins decoding.
+            # Wait for the first actual event so this router owns the TTFT
+            # deadline. Closing the upstream socket on timeout lets vLLM abort
+            # the queued generation before AI Gateway invokes another model.
+            first_body_byte = b""
+            if response.status < 400 and content_type.startswith("text/event-stream"):
+                set_response_socket_timeout(conn, response, TTFT_TIMEOUT)
+                try:
+                    first_body_byte = response.read(1)
+                except (TimeoutError, socket.timeout) as exc:
+                    raise BackendTTFTTimeout from exc
+                finally:
+                    set_response_socket_timeout(conn, response, REQUEST_TIMEOUT)
+
+            self.send_response(response.status, response.reason)
+            for key, value in response_headers:
+                if key.lower() not in HOP_BY_HOP_HEADERS:
+                    self.send_header(key, value)
             self.send_header("x-routed-backend", backend)
             self.send_header("connection", "close")
             self.end_headers()
+            downstream_started = True
             if content_type.startswith("text/event-stream"):
+                if first_body_byte:
+                    self.wfile.write(first_body_byte)
+                    self.wfile.flush()
                 while True:
                     line = response.readline()
                     if not line:
@@ -570,10 +614,23 @@ class RouterHandler(BaseHTTPRequestHandler):
                         break
                     self.wfile.write(chunk)
                     self.wfile.flush()
+        except BackendTTFTTimeout:
+            conn.close()
+            self.send_json(
+                504,
+                {
+                    "error": {
+                        "message": f"RTX backend exceeded {TTFT_TIMEOUT}s TTFT deadline",
+                        "type": "upstream_timeout",
+                        "code": "ttft_timeout",
+                    }
+                },
+            )
         except BrokenPipeError:
             pass
         except Exception as exc:
-            self.send_json(502, {"error": f"backend proxy failed: {exc}"})
+            if not downstream_started:
+                self.send_json(502, {"error": f"backend proxy failed: {exc}"})
         finally:
             conn.close()
 

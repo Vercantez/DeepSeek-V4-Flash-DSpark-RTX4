@@ -173,5 +173,34 @@ class StickyKeyTests(unittest.TestCase):
         self.assertEqual(plain, structured)
 
 
+class ResponseSocketTimeoutTests(unittest.TestCase):
+    class FakeSocket:
+        def __init__(self):
+            self.timeout = None
+
+        def settimeout(self, timeout):
+            self.timeout = timeout
+
+    def test_uses_connection_socket_when_available(self):
+        sock = self.FakeSocket()
+        conn = type("Connection", (), {"sock": sock})()
+        response = type("Response", (), {"fp": None})()
+
+        router.set_response_socket_timeout(conn, response, 20)
+
+        self.assertEqual(sock.timeout, 20)
+
+    def test_uses_detached_response_socket(self):
+        sock = self.FakeSocket()
+        raw = type("Raw", (), {"_sock": sock})()
+        fp = type("Buffer", (), {"raw": raw})()
+        conn = type("Connection", (), {"sock": None})()
+        response = type("Response", (), {"fp": fp})()
+
+        router.set_response_socket_timeout(conn, response, 900)
+
+        self.assertEqual(sock.timeout, 900)
+
+
 if __name__ == "__main__":
     unittest.main()

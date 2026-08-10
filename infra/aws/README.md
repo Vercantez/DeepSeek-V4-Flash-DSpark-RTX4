@@ -93,6 +93,12 @@ limit. `MAX_REQUEST_OUTPUT_TOKENS` is an optional operational guardrail, not a
 default policy. This keeps request routing deterministic and makes vLLM the
 authority for hard context validation.
 
+For streaming requests, `TTFT_TIMEOUT` is enforced by the sticky router after
+vLLM returns SSE headers but before its first body event. On expiry the router
+closes the vLLM socket and returns `504`, allowing AI Gateway to fall back
+without leaving the timed-out generation queued on the GPU worker. Keep the AI
+Gateway model-node timeout above this router-owned deadline.
+
 ## Worker Startup
 
 The active startup path uses a versioned, regional S3 artifact rather than a
