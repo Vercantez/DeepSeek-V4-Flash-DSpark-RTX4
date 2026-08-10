@@ -22,7 +22,7 @@ fi
 : "${TP_SIZE:=4}"
 : "${BACKEND:=lucifer-cutlass}"
 : "${KV_CACHE_DTYPE:=fp8_ds_mla}"
-: "${MAX_MODEL_LEN:=262144}"
+: "${MAX_MODEL_LEN:=}"
 : "${MAX_NUM_SEQS:=64}"
 : "${MAX_NUM_BATCHED_TOKENS:=8192}"
 : "${GPU_MEMORY_UTILIZATION:=0.92}"
@@ -72,6 +72,11 @@ GENERATION_CONFIG_JSON="$(printf '{"temperature":%s,"top_p":%s,"top_k":%s,"repet
   "${GENERATION_TOP_K:-40}" \
   "${GENERATION_REPETITION_PENALTY:-1.05}" \
   "${GENERATION_MAX_TOKENS:-384000}")"
+
+MODEL_LEN_ARGS=()
+if [ -n "$MAX_MODEL_LEN" ]; then
+  MODEL_LEN_ARGS=(--max-model-len "$MAX_MODEL_LEN")
+fi
 
 BACKEND_ARGS=()
 BACKEND_ENV=()
@@ -216,7 +221,7 @@ docker run -d \
   --tensor-parallel-size "$TP_SIZE" \
   --decode-context-parallel-size 1 \
   --gpu-memory-utilization "$GPU_MEMORY_UTILIZATION" \
-  --max-model-len "$MAX_MODEL_LEN" \
+  "${MODEL_LEN_ARGS[@]}" \
   --max-num-seqs "$MAX_NUM_SEQS" \
   --max-num-batched-tokens "$MAX_NUM_BATCHED_TOKENS" \
   --scheduling-policy "$SCHEDULING_POLICY" \

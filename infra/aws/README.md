@@ -83,12 +83,12 @@ The router maps the shared default/output guardrails to each native schema:
 endpoint and its final chat-generation validation can account for templates
 differently. Instead, the deployed model contract is explicit:
 
-- hard context limit: `262144` tokens
-- application working context: `220000` tokens
-- maximum output: `262144` tokens for an empty prompt
+- hard context limit: the checkpoint-native `1048576` tokens
+- application working context: `1048576` tokens
+- maximum output: `1048576` tokens for an empty prompt
 
-The application compacts before its working-context limit. By default, the
-router preserves the caller's `max_tokens`; vLLM enforces the hard context
+The application may compact before the model's native limit. By default, the
+router preserves the caller's `max_tokens`; vLLM enforces the native context
 limit. `MAX_REQUEST_OUTPUT_TOKENS` is an optional operational guardrail, not a
 default policy. This keeps request routing deterministic and makes vLLM the
 authority for hard context validation.

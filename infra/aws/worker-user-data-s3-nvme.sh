@@ -99,7 +99,7 @@ sudo -u ubuntu git -C "$repo" pull --ff-only origin main
 # established streams to use the remaining notice window.
 "$repo/infra/aws/install-spot-interruption-watcher.sh"
 
-sed -i '/^HF_CACHE=/d; /^MODEL_DIR=/d; /^KV_CACHE_DTYPE=/d; /^KV_OFFLOAD_GB=/d; /^KV_OFFLOAD_DISK_DIR=/d; /^DSPARK_MODEL=/d; /^DSPARK_DRAFT_MODEL=/d; /^MTP_NUM_TOKENS=/d; /^DSPARK_NUM_TOKENS=/d; /^DSPARK_SAMPLE=/d' "$env_file"
+sed -i '/^HF_CACHE=/d; /^MODEL_DIR=/d; /^KV_CACHE_DTYPE=/d; /^KV_OFFLOAD_GB=/d; /^KV_OFFLOAD_DISK_DIR=/d; /^DSPARK_MODEL=/d; /^DSPARK_DRAFT_MODEL=/d; /^MTP_NUM_TOKENS=/d; /^DSPARK_NUM_TOKENS=/d; /^DSPARK_SAMPLE=/d; /^MAX_MODEL_LEN=/d' "$env_file"
 printf '%s\n' \
   "HF_CACHE=$HF_CACHE" \
   "MODEL_DIR=/cache/huggingface/$model_dir_rel" \

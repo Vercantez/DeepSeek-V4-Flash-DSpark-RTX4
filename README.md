@@ -15,7 +15,7 @@ This is the stack behind [camelAI](https://camelai.com)'s free-tier model. It is
 | Model | `DeepSeek-V4-Flash-DSpark` |
 | Speculative decoding | DSpark, 5 draft tokens |
 | KV cache | `fp8_ds_mla` |
-| Context | `max_model_len=262144` (app working context ~220K) |
+| Context | Native checkpoint limit (`1,048,576` tokens); no lower vLLM override |
 | Concurrency | `max_num_seqs=64`, `max_num_batched_tokens=8192` |
 | Scheduling | `priority` |
 | KV offload | 256GB host RAM + local NVMe spill |
@@ -66,7 +66,8 @@ Important env knobs (see `.env.rtx4.example`):
 
 ```bash
 KV_CACHE_DTYPE=fp8_ds_mla
-MAX_MODEL_LEN=262144
+# Optional lower operational cap. Empty uses the checkpoint's native limit.
+MAX_MODEL_LEN=
 MAX_NUM_SEQS=64
 MTP_NUM_TOKENS=5
 KV_OFFLOAD_GB=256

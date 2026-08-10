@@ -64,10 +64,11 @@ OpenAI-compatible.
 
 ## Runtime baseline
 
-The service default is `MAX_NUM_SEQS=64`, `MAX_NUM_BATCHED_TOKENS=8192`,
-`MAX_MODEL_LEN=262144`, and priority scheduling. Keep batch-size changes behind
-a reproducible benchmark. A prior `12288` token prefetch canary regressed from
-the 8192 baseline and was not adopted.
+The service default is `MAX_NUM_SEQS=64`, `MAX_NUM_BATCHED_TOKENS=8192`, the
+checkpoint-native 1,048,576-token context limit (no `MAX_MODEL_LEN` override),
+and priority scheduling. Keep batch-size changes behind a reproducible
+benchmark. A prior `12288` token prefetch canary regressed from the 8192
+baseline and was not adopted.
 
 New S3/NVMe worker templates enable tiered KV offload by default: a 256 GiB
 host-memory primary tier plus local-NVMe secondary tier. The isolated

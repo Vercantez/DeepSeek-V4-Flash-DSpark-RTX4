@@ -13,7 +13,7 @@
 | Model | `deepseek-ai/DeepSeek-V4-Flash-DSpark` (MLA + sparse indexer, FP8 weights, DSpark γ=5 / rank-256 Markov head) |
 | KV cache | `fp8` |
 | Speculative | `{"method":"dspark","num_speculative_tokens":5}` |
-| Context | `max-model-len 262144` (recipe also supports up to ~900K single-stream) |
+| Context | Native checkpoint limit (`1,048,576` tokens); no lower vLLM override |
 
 > Both replicas serve the **same** DeepSeek-V4-Flash-DSpark weights. They differ
 > only in **packaging/launch recipe** (and, for B, the concurrency patch). There is
