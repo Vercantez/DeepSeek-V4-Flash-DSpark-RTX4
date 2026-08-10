@@ -72,6 +72,7 @@ MAX_MODEL_LEN=
 MAX_NUM_SEQS=64
 # Set to 0 to disable DSpark, which is required when DCP_SIZE is greater than 1.
 DSPARK_NUM_TOKENS=5
+FLASHINFER_AUTOTUNE=1
 KV_OFFLOAD_GB=256
 KV_OFFLOAD_DISK_DIR=/opt/dlami/nvme/kv-offload
 SCHEDULING_POLICY=priority

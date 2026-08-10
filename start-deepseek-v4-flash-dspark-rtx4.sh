@@ -32,6 +32,7 @@ fi
 : "${DSPARK_SAMPLE:=greedy}"
 : "${DSPARK_DRAFT_MODEL:=}"
 : "${PREFIX_CACHE:=1}"
+: "${FLASHINFER_AUTOTUNE:=1}"
 : "${SCHEDULING_POLICY:=priority}"
 : "${PULL_IMAGE:=0}"
 : "${KV_OFFLOAD_GB:=}"
@@ -145,6 +146,11 @@ if [ "$PREFIX_CACHE" != "1" ]; then
   PREFIX_ARGS=(--no-enable-prefix-caching)
 fi
 
+FLASHINFER_AUTOTUNE_ARGS=()
+if [ "$FLASHINFER_AUTOTUNE" = "1" ]; then
+  FLASHINFER_AUTOTUNE_ARGS=(--enable-flashinfer-autotune)
+fi
+
 KV_OFFLOAD_ARGS=()
 KV_OFFLOAD_ENV=()
 KV_OFFLOAD_MOUNTS=()
@@ -247,7 +253,7 @@ docker run -d \
   --async-scheduling \
   --no-scheduler-reserve-full-isl \
   --enable-chunked-prefill \
-  --enable-flashinfer-autotune \
+  "${FLASHINFER_AUTOTUNE_ARGS[@]}" \
   --tokenizer-mode deepseek_v4 \
   --tool-call-parser deepseek_v4 \
   --reasoning-parser deepseek_v4 \
