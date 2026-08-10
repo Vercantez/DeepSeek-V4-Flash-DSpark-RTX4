@@ -69,6 +69,8 @@ KV_CACHE_DTYPE=fp8_ds_mla
 DCP_SIZE=1
 # Use a2a when experimenting with DeepSeek-V4 DCP.
 DCP_COMM_BACKEND=
+# Use PIECEWISE for DeepSeek-V4 DCP on SM12.x.
+CUDAGRAPH_MODE=FULL_AND_PIECEWISE
 # Optional lower operational cap. Empty uses the checkpoint's native limit.
 MAX_MODEL_LEN=
 MAX_NUM_SEQS=64

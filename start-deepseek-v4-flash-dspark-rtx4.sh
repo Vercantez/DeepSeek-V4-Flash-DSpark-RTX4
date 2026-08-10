@@ -29,6 +29,7 @@ fi
 : "${MAX_NUM_BATCHED_TOKENS:=8192}"
 : "${GPU_MEMORY_UTILIZATION:=0.92}"
 : "${CUDA_GRAPH_CAPTURE_SIZE:=512}"
+: "${CUDAGRAPH_MODE:=FULL_AND_PIECEWISE}"
 : "${DSPARK_NUM_TOKENS:=${MTP_NUM_TOKENS:-5}}"
 : "${DSPARK_SAMPLE:=greedy}"
 : "${DSPARK_DRAFT_MODEL:=}"
@@ -133,6 +134,14 @@ case "$SCHEDULING_POLICY" in
   fcfs|priority) ;;
   *)
     echo "SCHEDULING_POLICY must be fcfs or priority, got $SCHEDULING_POLICY" >&2
+    exit 2
+    ;;
+esac
+
+case "$CUDAGRAPH_MODE" in
+  FULL_AND_PIECEWISE|PIECEWISE) ;;
+  *)
+    echo "CUDAGRAPH_MODE must be FULL_AND_PIECEWISE or PIECEWISE, got $CUDAGRAPH_MODE" >&2
     exit 2
     ;;
 esac
@@ -258,7 +267,7 @@ docker run -d \
   --max-num-batched-tokens "$MAX_NUM_BATCHED_TOKENS" \
   --scheduling-policy "$SCHEDULING_POLICY" \
   --max-cudagraph-capture-size "$CUDA_GRAPH_CAPTURE_SIZE" \
-  --compilation-config '{"cudagraph_mode":"FULL_AND_PIECEWISE","custom_ops":["all"]}' \
+  --compilation-config "{\"cudagraph_mode\":\"$CUDAGRAPH_MODE\",\"custom_ops\":[\"all\"]}" \
   --async-scheduling \
   --no-scheduler-reserve-full-isl \
   --enable-chunked-prefill \
