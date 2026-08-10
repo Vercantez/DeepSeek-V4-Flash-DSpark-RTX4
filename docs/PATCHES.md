@@ -135,3 +135,19 @@ prefilling), detection was skipped and the code fell through to the rectangular
 GSM8K N=8 (200 Q) — the load that crashed pre-fix — now completes with **0 errors**,
 93.5% accuracy vs 95.0% sequential, **97.5% per-question agreement** (quality-neutral
 within batch FP-nondeterminism).
+
+# RTX4 DCP4 global top-k score buffer
+
+`recipe/rtx4/Dockerfile.dcp4-topk` applies the lazy
+`topk_scores_buffer` allocation from
+[local-inference-lab/vllm PR #72](https://github.com/local-inference-lab/vllm/pull/72)
+to the pinned DeepSeek V4 v9 image. Without it, TP4/DCP4 reaches KV-cache
+allocation but fails during sparse-indexer warmup with:
+
+```text
+RuntimeError: B12X sparse indexer DCP requires topk_scores_buffer.
+```
+
+The overlay is intentionally narrow: it allocates an FP32 score buffer only
+when DCP is active, the B12X sparse indexer is selected, and a caller supplied
+the corresponding index buffer but omitted the score buffer.

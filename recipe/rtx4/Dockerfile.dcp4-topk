@@ -1,0 +1,11 @@
+ARG BASE_IMAGE=voipmonitor/vllm:eldritch-enlightenment-v45c1582-b12xf3686b5-pc1441b5-cu132-20260704
+FROM ${BASE_IMAGE}
+
+# Port the lazy B12X DCP top-k score-buffer allocation from
+# local-inference-lab/vllm PR #72. The published DS4 v9 image contains the
+# DCP global-top-k implementation, but model paths that omit this optional
+# constructor argument otherwise fail during sparse-indexer warmup.
+COPY recipe/rtx4/patch_dcp4_topk_scores.py /tmp/patch_dcp4_topk_scores.py
+RUN /opt/venv/bin/python /tmp/patch_dcp4_topk_scores.py \
+    && /opt/venv/bin/python -m py_compile \
+      /opt/venv/lib/python3.12/site-packages/vllm/model_executor/layers/sparse_attn_indexer.py
