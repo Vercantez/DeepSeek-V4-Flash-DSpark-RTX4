@@ -1,0 +1,14 @@
+ARG BASE_IMAGE=vllm-dspark-runtime:rtx4-dcp4-serving-v1
+FROM ${BASE_IMAGE}
+
+COPY patch_compressor_kv_zeroing.py /tmp/patch_compressor_kv_zeroing.py
+RUN python /tmp/patch_compressor_kv_zeroing.py \
+    && python -m py_compile \
+        /opt/venv/lib/python3.12/site-packages/vllm/v1/kv_cache_interface.py \
+        /opt/venv/lib/python3.12/site-packages/vllm/v1/core/single_type_kv_cache_manager.py \
+        /opt/venv/lib/python3.12/site-packages/vllm/v1/core/kv_cache_manager.py \
+        /opt/venv/lib/python3.12/site-packages/vllm/v1/core/sched/output.py \
+        /opt/venv/lib/python3.12/site-packages/vllm/v1/core/sched/scheduler.py \
+        /opt/venv/lib/python3.12/site-packages/vllm/v1/worker/gpu/model_runner.py \
+        /opt/venv/lib/python3.12/site-packages/vllm/v1/worker/utils.py \
+    && rm /tmp/patch_compressor_kv_zeroing.py

@@ -1,0 +1,12 @@
+ARG BASE_IMAGE=vllm-dspark-runtime:rtx4-dcp4-serving-v1
+FROM ${BASE_IMAGE}
+
+# Rank 3 can spin indefinitely in the Triton global-top-k candidate remap on
+# the 4x RTX PRO 6000 path. Use the equivalent PyTorch/NCCL fallback until the
+# Triton kernel is validated for this topology.
+COPY recipe/rtx4/patch_dcp4_triton_remap.py /tmp/patch_dcp4_triton_remap.py
+RUN /opt/venv/bin/python /tmp/patch_dcp4_triton_remap.py \
+    && /opt/venv/bin/python -m py_compile \
+      /opt/venv/lib/python3.12/site-packages/vllm/model_executor/layers/sparse_attn_indexer.py
+
+ENV VLLM_DCP_TRITON_REMAP=0

@@ -23,6 +23,8 @@ fi
 : "${DCP_SIZE:=1}"
 : "${DCP_COMM_BACKEND:=}"
 : "${BACKEND:=lucifer-cutlass}"
+: "${LINEAR_BACKEND:=}"
+: "${USE_DEEP_GEMM:=1}"
 : "${KV_CACHE_DTYPE:=fp8_ds_mla}"
 : "${MAX_MODEL_LEN:=}"
 : "${MAX_NUM_SEQS:=64}"
@@ -37,6 +39,7 @@ fi
 : "${PREFIX_CACHE:=1}"
 : "${FLASHINFER_AUTOTUNE:=1}"
 : "${SCHEDULING_POLICY:=priority}"
+: "${ASYNC_SCHEDULING:=1}"
 : "${PULL_IMAGE:=0}"
 : "${KV_OFFLOAD_GB:=}"
 : "${KV_OFFLOAD_DISK_DIR:=}"
@@ -131,10 +134,24 @@ case "$BACKEND" in
     ;;
 esac
 
+LINEAR_BACKEND_ARGS=()
+if [ -n "$LINEAR_BACKEND" ]; then
+  LINEAR_BACKEND_ARGS=(--linear-backend "$LINEAR_BACKEND")
+fi
+
 case "$SCHEDULING_POLICY" in
   fcfs|priority) ;;
   *)
     echo "SCHEDULING_POLICY must be fcfs or priority, got $SCHEDULING_POLICY" >&2
+    exit 2
+    ;;
+esac
+
+case "$ASYNC_SCHEDULING" in
+  1) ASYNC_SCHEDULING_ARGS=(--async-scheduling) ;;
+  0) ASYNC_SCHEDULING_ARGS=(--no-async-scheduling) ;;
+  *)
+    echo "ASYNC_SCHEDULING must be 0 or 1, got $ASYNC_SCHEDULING" >&2
     exit 2
     ;;
 esac
@@ -241,6 +258,7 @@ docker run -d \
   -e VLLM_USE_BREAKABLE_CUDAGRAPH=0 \
   -e VLLM_USE_V2_MODEL_RUNNER=1 \
   -e VLLM_USE_FLASHINFER_SAMPLER=1 \
+  -e VLLM_USE_DEEP_GEMM="$USE_DEEP_GEMM" \
   -e VLLM_MEMORY_PROFILER_ESTIMATE_CUDAGRAPHS=1 \
   -e SAFETENSORS_FAST_GPU=1 \
   -e HF_HOME=/cache/huggingface \
@@ -279,7 +297,7 @@ docker run -d \
   --max-cudagraph-capture-size "$CUDA_GRAPH_CAPTURE_SIZE" \
   --compilation-config "{\"cudagraph_mode\":\"$CUDAGRAPH_MODE\",\"custom_ops\":[\"all\"]}" \
   "${EAGER_ARGS[@]}" \
-  --async-scheduling \
+  "${ASYNC_SCHEDULING_ARGS[@]}" \
   --no-scheduler-reserve-full-isl \
   --enable-chunked-prefill \
   "${FLASHINFER_AUTOTUNE_ARGS[@]}" \
@@ -293,6 +311,7 @@ docker run -d \
   "${SPECULATIVE_ARGS[@]}" \
   "${KV_OFFLOAD_ARGS[@]}" \
   "${BACKEND_ARGS[@]}" \
+  "${LINEAR_BACKEND_ARGS[@]}" \
   "${PREFIX_ARGS[@]}"
 
 echo "$CONTAINER_NAME $SERVED_MODEL_NAME $BACKEND TP=$TP_SIZE DCP=$DCP_SIZE GPUS=$GPUS PORT=$PORT KV=$KV_CACHE_DTYPE SCHEDULER=$SCHEDULING_POLICY"
