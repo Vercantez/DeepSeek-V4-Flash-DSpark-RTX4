@@ -20,6 +20,7 @@ fi
 : "${PORT:=8000}"
 : "${GPUS:=0,1,2,3}"
 : "${TP_SIZE:=4}"
+: "${DCP_SIZE:=1}"
 : "${BACKEND:=lucifer-cutlass}"
 : "${KV_CACHE_DTYPE:=fp8_ds_mla}"
 : "${MAX_MODEL_LEN:=}"
@@ -126,6 +127,11 @@ case "$SCHEDULING_POLICY" in
     ;;
 esac
 
+if ! [[ "$DCP_SIZE" =~ ^[1-9][0-9]*$ ]] || (( TP_SIZE % DCP_SIZE != 0 )); then
+  echo "DCP_SIZE must be a positive divisor of TP_SIZE=$TP_SIZE, got $DCP_SIZE" >&2
+  exit 2
+fi
+
 PREFIX_ARGS=(--enable-prefix-caching)
 if [ "$PREFIX_CACHE" != "1" ]; then
   PREFIX_ARGS=(--no-enable-prefix-caching)
@@ -222,7 +228,7 @@ docker run -d \
   --block-size 256 \
   --load-format auto \
   --tensor-parallel-size "$TP_SIZE" \
-  --decode-context-parallel-size 1 \
+  --decode-context-parallel-size "$DCP_SIZE" \
   --gpu-memory-utilization "$GPU_MEMORY_UTILIZATION" \
   "${MODEL_LEN_ARGS[@]}" \
   --max-num-seqs "$MAX_NUM_SEQS" \
@@ -246,4 +252,4 @@ docker run -d \
   "${BACKEND_ARGS[@]}" \
   "${PREFIX_ARGS[@]}"
 
-echo "$CONTAINER_NAME $SERVED_MODEL_NAME $BACKEND TP=$TP_SIZE GPUS=$GPUS PORT=$PORT KV=$KV_CACHE_DTYPE SCHEDULER=$SCHEDULING_POLICY"
+echo "$CONTAINER_NAME $SERVED_MODEL_NAME $BACKEND TP=$TP_SIZE DCP=$DCP_SIZE GPUS=$GPUS PORT=$PORT KV=$KV_CACHE_DTYPE SCHEDULER=$SCHEDULING_POLICY"

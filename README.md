@@ -66,6 +66,7 @@ Important env knobs (see `.env.rtx4.example`):
 
 ```bash
 KV_CACHE_DTYPE=fp8_ds_mla
+DCP_SIZE=1
 # Optional lower operational cap. Empty uses the checkpoint's native limit.
 MAX_MODEL_LEN=
 MAX_NUM_SEQS=64
