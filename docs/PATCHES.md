@@ -151,3 +151,14 @@ RuntimeError: B12X sparse indexer DCP requires topk_scores_buffer.
 The overlay is intentionally narrow: it allocates an FP32 score buffer only
 when DCP is active, the B12X sparse indexer is selected, and a caller supplied
 the corresponding index buffer but omitted the score buffer.
+
+## Upstream DeepSeek-V4 DCP branch
+
+`recipe/rtx4/Dockerfile.dsv4-dcp-pr` is a separate experimental path that
+overlays the five Python/Triton commits from
+[vLLM PR #44573](https://github.com/vllm-project/vllm/pull/44573) at pinned
+commit `29642c21fa03f86dc20cd32230795ddbe28837d2` onto a compatible current vLLM
+image. This is intentionally separate from the July 4 Eldritch/B12X overlay:
+the upstream PR implements DeepSeek-V4's DCP-aware decode/LSE merge, compressor
+state merge, compressed-cache writes, and local KV/index mapping as one data
+layout change.

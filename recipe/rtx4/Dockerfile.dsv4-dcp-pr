@@ -1,0 +1,11 @@
+ARG BASE_IMAGE=vllm/vllm-openai:nightly
+FROM ${BASE_IMAGE}
+
+ARG DCP_PR_COMMIT=29642c21fa03f86dc20cd32230795ddbe28837d2
+ADD https://github.com/baonudesifeizhai/vllm/archive/${DCP_PR_COMMIT}.tar.gz /tmp/vllm-dcp-pr.tar.gz
+COPY recipe/rtx4/install_dsv4_dcp_pr.py /tmp/install_dsv4_dcp_pr.py
+
+RUN mkdir -p /tmp/vllm-dcp-pr \
+    && tar -xzf /tmp/vllm-dcp-pr.tar.gz --strip-components=1 -C /tmp/vllm-dcp-pr \
+    && python3 /tmp/install_dsv4_dcp_pr.py /tmp/vllm-dcp-pr \
+    && rm -rf /tmp/vllm-dcp-pr /tmp/vllm-dcp-pr.tar.gz
