@@ -1,0 +1,15 @@
+ARG BASE_IMAGE=vllm-dspark-runtime:rtx4-nvfp4-port-v3
+FROM ${BASE_IMAGE}
+
+# vLLM's synthetic mixed prefill/decode warmup does not construct a
+# DCP-compatible request and deadlocks before the API starts. Normal serving
+# uses the DCP-aware scheduler/model-runner path, so skip only that synthetic
+# warmup when decode context parallelism is enabled.
+RUN sed -i \
+      '/^    _warmup_deepseek_v4_prefill_metadata(worker)$/a\
+    if runner.vllm_config.parallel_config.decode_context_parallel_size > 1:\
+        logger.warning("Skipping synthetic sparse-MLA mixed warmup for DCP > 1.")\
+        return' \
+      /opt/venv/lib/python3.12/site-packages/vllm/model_executor/warmup/flashinfer_sparse_mla_warmup.py \
+    && python -m py_compile \
+      /opt/venv/lib/python3.12/site-packages/vllm/model_executor/warmup/flashinfer_sparse_mla_warmup.py
