@@ -21,6 +21,7 @@ fi
 : "${GPUS:=0,1,2,3}"
 : "${TP_SIZE:=4}"
 : "${DCP_SIZE:=1}"
+: "${DCP_COMM_BACKEND:=}"
 : "${BACKEND:=lucifer-cutlass}"
 : "${KV_CACHE_DTYPE:=fp8_ds_mla}"
 : "${MAX_MODEL_LEN:=}"
@@ -140,6 +141,10 @@ if ! [[ "$DCP_SIZE" =~ ^[1-9][0-9]*$ ]] || (( TP_SIZE % DCP_SIZE != 0 )); then
   echo "DCP_SIZE must be a positive divisor of TP_SIZE=$TP_SIZE, got $DCP_SIZE" >&2
   exit 2
 fi
+DCP_ARGS=(--decode-context-parallel-size "$DCP_SIZE")
+if [ -n "$DCP_COMM_BACKEND" ]; then
+  DCP_ARGS+=(--dcp-comm-backend "$DCP_COMM_BACKEND")
+fi
 
 PREFIX_ARGS=(--enable-prefix-caching)
 if [ "$PREFIX_CACHE" != "1" ]; then
@@ -246,7 +251,7 @@ docker run -d \
   --block-size 256 \
   --load-format auto \
   --tensor-parallel-size "$TP_SIZE" \
-  --decode-context-parallel-size "$DCP_SIZE" \
+  "${DCP_ARGS[@]}" \
   --gpu-memory-utilization "$GPU_MEMORY_UTILIZATION" \
   "${MODEL_LEN_ARGS[@]}" \
   --max-num-seqs "$MAX_NUM_SEQS" \
