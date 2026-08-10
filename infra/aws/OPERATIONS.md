@@ -79,7 +79,9 @@ keep it out of short-latency benchmarks unless the workload actually spills.
 The launch script bind-mounts `KV_OFFLOAD_DISK_DIR` into the container at the
 same absolute path so filesystem-tier pages are stored on NVMe rather than in
 the container's root-disk writable layer. Existing workers retain their current
-configuration until replacement.
+configuration until replacement. The worker unit deletes filesystem-tier pages
+before each vLLM start because they cannot be reattached after the process that
+created their index exits.
 
 ## Recovery and verification
 

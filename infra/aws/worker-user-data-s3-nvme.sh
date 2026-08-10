@@ -121,8 +121,11 @@ fi
 install -d /etc/systemd/system/deepseek-rtx4.service.d
 cat >/etc/systemd/system/deepseek-rtx4.service.d/cleanup-offload.conf <<'EOF'
 [Service]
-# vLLM's host-IPC offload mmap can outlive an interrupted container.
+# Offload pages are process-local cache state. After a restart their index is
+# gone, so retaining the files only consumes NVMe and can eventually prevent a
+# replacement process from spilling fresh pages.
 ExecStartPre=+/bin/sh -c 'rm -f /dev/shm/vllm_offload_*.mmap'
+ExecStartPre=+/usr/bin/find /opt/dlami/nvme/kv-offload -mindepth 1 -delete
 ExecStop=-/usr/bin/docker rm -f deepseek-v4-flash-dspark-rtx4
 EOF
 
