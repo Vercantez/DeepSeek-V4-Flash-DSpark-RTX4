@@ -60,12 +60,20 @@ if [[ "${MODEL_DIR:-}" == /cache/huggingface/* ]] && \
 fi
 
 MODEL_ARG="${MODEL_DIR:-$DSPARK_MODEL}"
-# Flash-0731 stores the DSpark drafter in the target checkpoint. The older
-# preview package used a separate draft model, which remains opt-in only for
-# historical checkpoints.
-SPECULATIVE_CONFIG="$(printf '{"method":"dspark","num_speculative_tokens":%s,"draft_sample_method":"%s"}' "$DSPARK_NUM_TOKENS" "$DSPARK_SAMPLE")"
-if [ -n "$DSPARK_DRAFT_MODEL" ]; then
-  SPECULATIVE_CONFIG="$(printf '{"model":"%s","method":"dspark","num_speculative_tokens":%s,"draft_sample_method":"%s"}' "$DSPARK_DRAFT_MODEL" "$DSPARK_NUM_TOKENS" "$DSPARK_SAMPLE")"
+SPECULATIVE_ARGS=()
+if ! [[ "$DSPARK_NUM_TOKENS" =~ ^[0-9]+$ ]]; then
+  echo "DSPARK_NUM_TOKENS must be a non-negative integer, got $DSPARK_NUM_TOKENS" >&2
+  exit 2
+fi
+if (( DSPARK_NUM_TOKENS > 0 )); then
+  # Flash-0731 stores the DSpark drafter in the target checkpoint. The older
+  # preview package used a separate draft model, which remains opt-in only for
+  # historical checkpoints.
+  SPECULATIVE_CONFIG="$(printf '{"method":"dspark","num_speculative_tokens":%s,"draft_sample_method":"%s"}' "$DSPARK_NUM_TOKENS" "$DSPARK_SAMPLE")"
+  if [ -n "$DSPARK_DRAFT_MODEL" ]; then
+    SPECULATIVE_CONFIG="$(printf '{"model":"%s","method":"dspark","num_speculative_tokens":%s,"draft_sample_method":"%s"}' "$DSPARK_DRAFT_MODEL" "$DSPARK_NUM_TOKENS" "$DSPARK_SAMPLE")"
+  fi
+  SPECULATIVE_ARGS=(--speculative-config "$SPECULATIVE_CONFIG")
 fi
 GENERATION_CONFIG_JSON="$(printf '{"temperature":%s,"top_p":%s,"top_k":%s,"repetition_penalty":%s,"max_tokens":%s}' \
   "${GENERATION_TEMPERATURE:-0.0}" \
@@ -247,7 +255,7 @@ docker run -d \
   --default-chat-template-kwargs.thinking=false \
   --generation-config vllm \
   --override-generation-config "$GENERATION_CONFIG_JSON" \
-  --speculative-config "$SPECULATIVE_CONFIG" \
+  "${SPECULATIVE_ARGS[@]}" \
   "${KV_OFFLOAD_ARGS[@]}" \
   "${BACKEND_ARGS[@]}" \
   "${PREFIX_ARGS[@]}"
