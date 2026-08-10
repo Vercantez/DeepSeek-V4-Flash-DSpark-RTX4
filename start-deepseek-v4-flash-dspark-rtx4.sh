@@ -146,10 +146,14 @@ if [ "$PREFIX_CACHE" != "1" ]; then
   PREFIX_ARGS=(--no-enable-prefix-caching)
 fi
 
-FLASHINFER_AUTOTUNE_ARGS=()
-if [ "$FLASHINFER_AUTOTUNE" = "1" ]; then
-  FLASHINFER_AUTOTUNE_ARGS=(--enable-flashinfer-autotune)
-fi
+case "$FLASHINFER_AUTOTUNE" in
+  1) FLASHINFER_AUTOTUNE_ARGS=(--enable-flashinfer-autotune) ;;
+  0) FLASHINFER_AUTOTUNE_ARGS=(--no-enable-flashinfer-autotune) ;;
+  *)
+    echo "FLASHINFER_AUTOTUNE must be 0 or 1, got $FLASHINFER_AUTOTUNE" >&2
+    exit 2
+    ;;
+esac
 
 KV_OFFLOAD_ARGS=()
 KV_OFFLOAD_ENV=()
