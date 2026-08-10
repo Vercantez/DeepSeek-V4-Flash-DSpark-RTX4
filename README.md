@@ -71,6 +71,7 @@ DCP_SIZE=1
 DCP_COMM_BACKEND=
 # Use PIECEWISE for DeepSeek-V4 DCP on SM12.x.
 CUDAGRAPH_MODE=FULL_AND_PIECEWISE
+ENFORCE_EAGER=0
 # Optional lower operational cap. Empty uses the checkpoint's native limit.
 MAX_MODEL_LEN=
 MAX_NUM_SEQS=64

@@ -30,6 +30,7 @@ fi
 : "${GPU_MEMORY_UTILIZATION:=0.92}"
 : "${CUDA_GRAPH_CAPTURE_SIZE:=512}"
 : "${CUDAGRAPH_MODE:=FULL_AND_PIECEWISE}"
+: "${ENFORCE_EAGER:=0}"
 : "${DSPARK_NUM_TOKENS:=${MTP_NUM_TOKENS:-5}}"
 : "${DSPARK_SAMPLE:=greedy}"
 : "${DSPARK_DRAFT_MODEL:=}"
@@ -142,6 +143,15 @@ case "$CUDAGRAPH_MODE" in
   FULL_AND_PIECEWISE|PIECEWISE) ;;
   *)
     echo "CUDAGRAPH_MODE must be FULL_AND_PIECEWISE or PIECEWISE, got $CUDAGRAPH_MODE" >&2
+    exit 2
+    ;;
+esac
+
+case "$ENFORCE_EAGER" in
+  1) EAGER_ARGS=(--enforce-eager) ;;
+  0) EAGER_ARGS=() ;;
+  *)
+    echo "ENFORCE_EAGER must be 0 or 1, got $ENFORCE_EAGER" >&2
     exit 2
     ;;
 esac
@@ -268,6 +278,7 @@ docker run -d \
   --scheduling-policy "$SCHEDULING_POLICY" \
   --max-cudagraph-capture-size "$CUDA_GRAPH_CAPTURE_SIZE" \
   --compilation-config "{\"cudagraph_mode\":\"$CUDAGRAPH_MODE\",\"custom_ops\":[\"all\"]}" \
+  "${EAGER_ARGS[@]}" \
   --async-scheduling \
   --no-scheduler-reserve-full-isl \
   --enable-chunked-prefill \
