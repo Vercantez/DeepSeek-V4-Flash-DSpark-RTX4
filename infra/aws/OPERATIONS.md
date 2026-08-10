@@ -76,7 +76,10 @@ host-memory primary tier plus local-NVMe secondary tier. The isolated
 OpenAI-compatible smoke request. This increases retained cache capacity for
 long-context sessions, but a miss that reaches a lower tier has higher latency;
 keep it out of short-latency benchmarks unless the workload actually spills.
-Existing workers retain their current configuration until replacement.
+The launch script bind-mounts `KV_OFFLOAD_DISK_DIR` into the container at the
+same absolute path so filesystem-tier pages are stored on NVMe rather than in
+the container's root-disk writable layer. Existing workers retain their current
+configuration until replacement.
 
 ## Recovery and verification
 

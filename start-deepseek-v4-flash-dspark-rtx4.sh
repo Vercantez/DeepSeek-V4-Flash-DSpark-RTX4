@@ -133,6 +133,7 @@ fi
 
 KV_OFFLOAD_ARGS=()
 KV_OFFLOAD_ENV=()
+KV_OFFLOAD_MOUNTS=()
 CUDA_ALLOCATOR_ARGS=(-e PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True)
 SHM_SIZE=64g
 if [ -n "$KV_OFFLOAD_GB" ]; then
@@ -141,6 +142,7 @@ if [ -n "$KV_OFFLOAD_GB" ]; then
     exit 2
   fi
   mkdir -p "$KV_OFFLOAD_DISK_DIR"
+  KV_OFFLOAD_MOUNTS=(-v "${KV_OFFLOAD_DISK_DIR}:${KV_OFFLOAD_DISK_DIR}")
   KV_TRANSFER_CONFIG="$(printf '{\"kv_connector\":\"OffloadingConnector\",\"kv_role\":\"kv_both\",\"kv_connector_extra_config\":{\"spec_name\":\"TieringOffloadingSpec\",\"cpu_bytes_to_use\":%s,\"eviction_policy\":\"lru\",\"secondary_tiers\":[{\"type\":\"fs\",\"root_dir\":\"%s\",\"n_read_threads\":32,\"n_write_threads\":16}]}}' "$((KV_OFFLOAD_GB * 1024 * 1024 * 1024))" "$KV_OFFLOAD_DISK_DIR")"
   KV_OFFLOAD_ARGS=(
     --kv-offloading-size "$KV_OFFLOAD_GB"
@@ -177,6 +179,7 @@ docker run -d \
   --ulimit stack=67108864 \
   --ulimit nofile=1048576:1048576 \
   -v "${HF_CACHE}:/cache/huggingface" \
+  "${KV_OFFLOAD_MOUNTS[@]}" \
   -e CUDA_VISIBLE_DEVICES="$GPUS" \
   -e CUDA_DEVICE_ORDER=PCI_BUS_ID \
   -e CUTE_DSL_ARCH=sm_120a \
