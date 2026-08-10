@@ -1,0 +1,21 @@
+ARG BASE_IMAGE=vllm-dspark-runtime:rtx4-group-zeroing-v5
+FROM ${BASE_IMAGE}
+
+# Keep the pinned B12X attention/indexer stack. This layer replaces only the
+# 45c1582-era compressor's rank-local DCP softmax with exact cross-rank partial
+# statistics, a one-all-gather merge, and owner-local cache finalization.
+COPY dcp4_compressor_kernels.py /tmp/dcp4_compressor_kernels.py
+COPY patch_dcp4_compressor_correctness.py /tmp/patch_dcp4_compressor_correctness.py
+COPY patch_dcp4_compressed_slot_mapping.py /tmp/patch_dcp4_compressed_slot_mapping.py
+RUN python /tmp/patch_dcp4_compressor_correctness.py \
+    && python /tmp/patch_dcp4_compressed_slot_mapping.py \
+    && python /tmp/patch_dcp4_compressor_correctness.py \
+    && python /tmp/patch_dcp4_compressed_slot_mapping.py --check \
+    && python -m py_compile \
+        /opt/venv/lib/python3.12/site-packages/vllm/models/deepseek_v4/compressor.py \
+        /opt/venv/lib/python3.12/site-packages/vllm/models/deepseek_v4/sparse_mla.py \
+        /opt/venv/lib/python3.12/site-packages/vllm/models/deepseek_v4/common/ops/dcp4_compressor_kernels.py \
+    && rm \
+        /tmp/dcp4_compressor_kernels.py \
+        /tmp/patch_dcp4_compressed_slot_mapping.py \
+        /tmp/patch_dcp4_compressor_correctness.py
