@@ -9,15 +9,15 @@ set -euo pipefail
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 VLLM_REPO_URL=${VLLM_REPO_URL:-https://github.com/vllm-project/vllm.git}
 VLLM_SOURCE_COMMIT=${VLLM_SOURCE_COMMIT:-752a3a504485790a2e8491cacbb35c137339ad34}
-PATCH_FILE=${PATCH_FILE:-$SCRIPT_DIR/patches/vllm-v0.25.1-sm120-marlin-c-tmp.patch}
+PATCHER=${PATCHER:-$SCRIPT_DIR/recipe/rtx4/patch_sm120_marlin.py}
 PATCHED_BASE_IMAGE=${PATCHED_BASE_IMAGE:-vllm-dspark-runtime:vllm-0.25.1-marlin-c-tmp-v1-base}
 FINAL_IMAGE=${FINAL_IMAGE:-vllm-dspark-runtime:stock-sm120-vllm-0.25.1-marlin-c-tmp-v1}
 TORCH_CUDA_ARCH_LIST=${TORCH_CUDA_ARCH_LIST:-12.0}
 MAX_JOBS=${MAX_JOBS:-32}
 NVCC_THREADS=${NVCC_THREADS:-4}
 
-if [ ! -f "$PATCH_FILE" ]; then
-  echo "missing Marlin patch: $PATCH_FILE" >&2
+if [ ! -f "$PATCHER" ]; then
+  echo "missing Marlin patcher: $PATCHER" >&2
   exit 1
 fi
 
@@ -38,10 +38,10 @@ if [ "$actual_commit" != "$VLLM_SOURCE_COMMIT" ]; then
   exit 1
 fi
 
-git -C "$build_root" apply --check "$PATCH_FILE"
-git -C "$build_root" apply "$PATCH_FILE"
-
 source_file="$build_root/csrc/libtorch_stable/moe/marlin_moe_wna16/ops.cu"
+python3 "$PATCHER" "$source_file" --check
+python3 "$PATCHER" "$source_file"
+test "$(python3 "$PATCHER" "$source_file" --check)" = patched
 grep -Fq 'long max_c_tmp_size =' "$source_file"
 grep -Fq '(long)sms * 4 * moe_block_size * MARLIN_NAMESPACE_NAME::max_thread_n;' "$source_file"
 if grep -A3 -F 'long max_c_tmp_size =' "$source_file" | grep -Fq 'min('; then

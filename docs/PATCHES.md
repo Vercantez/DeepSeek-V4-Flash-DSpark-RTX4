@@ -165,7 +165,7 @@ layout change.
 
 # Stock SM120 Marlin MoE temporary-buffer fix
 
-`patches/vllm-v0.25.1-sm120-marlin-c-tmp.patch` carries the narrow CUDA fix
+`recipe/rtx4/patch_sm120_marlin.py` carries the narrow CUDA fix
 from [vLLM PR #43730](https://github.com/vllm-project/vllm/pull/43730) onto the
 exact vLLM 0.25.1 source commit used by the production RTX PRO 6000 profile.
 It removes the data-dependent clamp that can undersize Marlin MoE's FP32

@@ -14,7 +14,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 LAUNCHER = REPO_ROOT / "start-deepseek-v4-flash-stock-sm120-rtx4.sh"
 DOCKERFILE = REPO_ROOT / "recipe/rtx4/Dockerfile.stock-sm120"
 BUILD_SCRIPT = REPO_ROOT / "build-stock-sm120-vllm-runtime.sh"
-MARLIN_PATCH = REPO_ROOT / "patches/vllm-v0.25.1-sm120-marlin-c-tmp.patch"
+MARLIN_PATCHER = REPO_ROOT / "recipe/rtx4/patch_sm120_marlin.py"
 IMAGE = "vllm-dspark-runtime:stock-sm120-vllm-0.25.1-marlin-c-tmp-v1"
 
 
@@ -187,7 +187,7 @@ printf '%s\n' '/dev/fake 4294967296 0 4294967296 0% /fake-nvme'
     def test_runtime_is_source_patched_and_pinned(self) -> None:
         dockerfile = DOCKERFILE.read_text()
         build_script = BUILD_SCRIPT.read_text()
-        marlin_patch = MARLIN_PATCH.read_text()
+        marlin_patcher = MARLIN_PATCHER.read_text()
 
         self.assertIn(
             "vllm-dspark-runtime:vllm-0.25.1-marlin-c-tmp-v1-base",
@@ -199,14 +199,14 @@ printf '%s\n' '/dev/fake 4294967296 0 4294967296 0% /fake-nvme'
         self.assertNotIn("COPY ", dockerfile)
 
         self.assertIn("752a3a504485790a2e8491cacbb35c137339ad34", build_script)
-        self.assertIn("git -C \"$build_root\" apply --check", build_script)
+        self.assertIn('python3 "$PATCHER" "$source_file" --check', build_script)
         self.assertIn("--target vllm-openai", build_script)
         self.assertIn(IMAGE, build_script)
-        self.assertIn("device_max_shared_mem", marlin_patch)
-        self.assertIn("sh_cache_size, stream", marlin_patch)
+        self.assertIn("device_max_shared_mem", marlin_patcher)
+        self.assertIn("sh_cache_size, stream", marlin_patcher)
         self.assertIn(
             "(long)sms * 4 * moe_block_size * MARLIN_NAMESPACE_NAME::max_thread_n",
-            marlin_patch,
+            marlin_patcher,
         )
 
 
