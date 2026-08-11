@@ -118,8 +118,10 @@ downloads it to `/opt/dlami/nvme/deepseek-model`, validates its SHA-256
 checksums, then points `HF_CACHE` at that local NVMe path before starting vLLM.
 Only restore a runtime cache produced by the same pinned stock image; caches
 from the former custom DCP/DSpark runtime are incompatible.
-The stock launcher persists the container's `/root/.cache` tree at
-`$HF_CACHE/vllm-cache`, which is the directory archived by the publish script.
+The stock launcher persists the container's `/root/.cache` tree in a
+versioned stock-only directory under `$HF_CACHE`, which is archived by the
+publish script. It is deliberately separate from the custom runtime's old
+unversioned cache directory.
 
 The local NVMe cache is intentionally ephemeral: it is discarded on Spot
 termination and rebuilt from S3. Bake the Docker image, repository, and

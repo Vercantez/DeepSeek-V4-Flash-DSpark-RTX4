@@ -35,10 +35,12 @@ after an eviction. The runtime AMI should include Docker, the pinned stock
 image, this repository, and the systemd service; user data can build the image
 as a fallback.
 
-The launcher bind-mounts `$HF_CACHE/vllm-cache` at `/root/.cache` so
+The launcher bind-mounts the versioned stock cache directory under `$HF_CACHE`
+at `/root/.cache` so
 DeepGEMM, FlashInfer, and related compiled/autotune artifacts survive a
 container replacement. A promoted `RUNTIME_CACHE_OBJECT` is extracted into
-that directory before the service starts.
+that directory before the service starts. Keep it separate from the former
+custom runtime's unversioned `vllm-cache` directory.
 
 Use `promote-s3-nvme-launch-template.sh` for launch-template updates. It
 embeds the S3/NVMe user data and removes the legacy model-cache EBS mapping.

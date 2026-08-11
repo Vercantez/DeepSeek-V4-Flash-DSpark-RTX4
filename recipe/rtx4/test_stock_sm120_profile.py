@@ -90,7 +90,12 @@ exit 9
             if arg == "-v"
         }
         self.assertTrue(
-            any(volume.endswith("/hf/vllm-cache:/root/.cache") for volume in docker_volumes),
+            any(
+                volume.endswith(
+                    "/hf/vllm-cache-stock-sm120-v0.25.1-fi0.6.14:/root/.cache"
+                )
+                for volume in docker_volumes
+            ),
             docker_volumes,
         )
 

@@ -105,7 +105,7 @@ sed -i '/^HF_CACHE=/d; /^MODEL_DIR=/d; /^VLLM_CACHE_DIR=/d; /^DSPARK_VLLM_IMAGE=
 printf '%s\n' \
   "HF_CACHE=$HF_CACHE" \
   "MODEL_DIR=/cache/huggingface/$model_dir_rel" \
-  "VLLM_CACHE_DIR=$HF_CACHE/vllm-cache" \
+  "VLLM_CACHE_DIR=$HF_CACHE/vllm-cache-stock-sm120-v0.25.1-fi0.6.14" \
   "DSPARK_VLLM_IMAGE=vllm-dspark-runtime:stock-sm120-vllm-0.25.1" \
   "KV_CACHE_DTYPE=fp8" \
   "DCP_SIZE=1" \

@@ -21,7 +21,7 @@ fi
 : "${DSPARK_VLLM_IMAGE:=vllm-dspark-runtime:stock-sm120-vllm-0.25.1}"
 : "${CONTAINER_NAME:=deepseek-v4-flash-stock-sm120-rtx4}"
 : "${HF_CACHE:=$HOME/.cache/huggingface}"
-: "${VLLM_CACHE_DIR:=$HF_CACHE/vllm-cache}"
+: "${VLLM_CACHE_DIR:=$HF_CACHE/vllm-cache-stock-sm120-v0.25.1-fi0.6.14}"
 : "${VLLM_HOST:=0.0.0.0}"
 : "${PORT:=8000}"
 : "${GPUS:=0,1,2,3}"
