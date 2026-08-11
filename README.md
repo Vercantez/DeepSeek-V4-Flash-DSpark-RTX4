@@ -73,7 +73,7 @@ Important env knobs (see `.env.rtx4.stock-sm120.example`):
 KV_CACHE_DTYPE=fp8
 DCP_SIZE=1
 DSPARK_NUM_TOKENS=0
-MAX_MODEL_LEN=524288
+MAX_MODEL_LEN=262144
 GPU_MEMORY_UTILIZATION=0.90
 ```
 
