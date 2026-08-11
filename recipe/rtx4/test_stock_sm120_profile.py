@@ -95,6 +95,8 @@ printf '%s\n' '/dev/fake 4294967296 0 4294967296 0% /fake-nvme'
         result, args = self.run_launcher()
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(args[0], "run")
+        self.assertIn("--restart", args)
+        self.assertEqual(args[args.index("--restart") + 1], "unless-stopped")
 
         def value_for(flag: str) -> str:
             index = args.index(flag)

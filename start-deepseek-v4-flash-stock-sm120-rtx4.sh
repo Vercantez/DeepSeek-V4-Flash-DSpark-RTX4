@@ -122,6 +122,7 @@ fi
 
 docker run -d \
   --name "$CONTAINER_NAME" \
+  --restart unless-stopped \
   --gpus all \
   --runtime nvidia \
   --ipc host \
