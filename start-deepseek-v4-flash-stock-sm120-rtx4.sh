@@ -31,6 +31,12 @@ fi
 : "${KV_CACHE_DTYPE:=fp8}"
 : "${MAX_MODEL_LEN:=262144}"
 : "${GPU_MEMORY_UTILIZATION:=0.90}"
+: "${KV_OFFLOAD_GB:=256}"
+: "${KV_OFFLOAD_DISK_DIR:=/opt/dlami/nvme/kv-offload}"
+: "${KV_OFFLOAD_REQUIRED_MOUNT:=/opt/dlami/nvme}"
+: "${KV_OFFLOAD_MIN_FREE_GB:=1024}"
+: "${KV_OFFLOAD_READ_THREADS:=32}"
+: "${KV_OFFLOAD_WRITE_THREADS:=16}"
 : "${PULL_IMAGE:=0}"
 
 if [ "$TP_SIZE" != "4" ]; then
@@ -53,10 +59,52 @@ if ! [[ "$MAX_MODEL_LEN" =~ ^[1-9][0-9]*$ ]] || (( MAX_MODEL_LEN > 262144 )); th
   echo "stock-sm120 requires MAX_MODEL_LEN to be an integer at or below 262144, got $MAX_MODEL_LEN" >&2
   exit 2
 fi
-if [ -n "${KV_OFFLOAD_GB:-}" ] || [ -n "${KV_OFFLOAD_DISK_DIR:-}" ]; then
-  echo "stock-sm120 does not enable the custom KV offload path" >&2
+if ! [[ "$KV_OFFLOAD_GB" =~ ^[1-9][0-9]*$ ]]; then
+  echo "stock-sm120 requires KV_OFFLOAD_GB to be a positive integer" >&2
   exit 2
 fi
+if ! [[ "$KV_OFFLOAD_MIN_FREE_GB" =~ ^[1-9][0-9]*$ ]]; then
+  echo "stock-sm120 requires KV_OFFLOAD_MIN_FREE_GB to be a positive integer" >&2
+  exit 2
+fi
+if ! [[ "$KV_OFFLOAD_READ_THREADS" =~ ^[1-9][0-9]*$ ]] ||
+  ! [[ "$KV_OFFLOAD_WRITE_THREADS" =~ ^[1-9][0-9]*$ ]]; then
+  echo "stock-sm120 requires positive KV offload thread counts" >&2
+  exit 2
+fi
+if [ "${KV_OFFLOAD_REQUIRED_MOUNT#/}" = "$KV_OFFLOAD_REQUIRED_MOUNT" ] ||
+  [ "${KV_OFFLOAD_DISK_DIR#/}" = "$KV_OFFLOAD_DISK_DIR" ]; then
+  echo "stock-sm120 requires absolute KV offload mount and directory paths" >&2
+  exit 2
+fi
+case "$KV_OFFLOAD_DISK_DIR/" in
+  "$KV_OFFLOAD_REQUIRED_MOUNT"/*) ;;
+  *)
+    echo "KV offload directory must be below $KV_OFFLOAD_REQUIRED_MOUNT" >&2
+    exit 2
+    ;;
+esac
+case "$KV_OFFLOAD_DISK_DIR" in
+  *[!A-Za-z0-9_./-]*)
+    echo "KV offload directory contains unsupported characters" >&2
+    exit 2
+    ;;
+esac
+
+mkdir -p "$KV_OFFLOAD_DISK_DIR"
+KV_OFFLOAD_ACTUAL_MOUNT="$(findmnt -n -o TARGET -T "$KV_OFFLOAD_DISK_DIR")"
+if [ "$KV_OFFLOAD_ACTUAL_MOUNT" != "$KV_OFFLOAD_REQUIRED_MOUNT" ]; then
+  echo "Refusing KV offload: $KV_OFFLOAD_DISK_DIR resolves to $KV_OFFLOAD_ACTUAL_MOUNT, expected $KV_OFFLOAD_REQUIRED_MOUNT" >&2
+  exit 2
+fi
+KV_OFFLOAD_AVAILABLE_KB="$(df -Pk "$KV_OFFLOAD_DISK_DIR" | awk 'NR == 2 {print $4}')"
+if ! [[ "$KV_OFFLOAD_AVAILABLE_KB" =~ ^[0-9]+$ ]] ||
+  (( KV_OFFLOAD_AVAILABLE_KB < KV_OFFLOAD_MIN_FREE_GB * 1024 * 1024 )); then
+  echo "Refusing KV offload: $KV_OFFLOAD_DISK_DIR has less than ${KV_OFFLOAD_MIN_FREE_GB} GiB free" >&2
+  exit 2
+fi
+
+KV_TRANSFER_CONFIG="$(printf '{\"kv_connector\":\"OffloadingConnector\",\"kv_role\":\"kv_both\",\"kv_connector_extra_config\":{\"spec_name\":\"TieringOffloadingSpec\",\"cpu_bytes_to_use\":%s,\"eviction_policy\":\"lru\",\"secondary_tiers\":[{\"type\":\"fs\",\"root_dir\":\"%s\",\"n_read_threads\":%s,\"n_write_threads\":%s}]}}' "$((KV_OFFLOAD_GB * 1024 * 1024 * 1024))" "$KV_OFFLOAD_DISK_DIR" "$KV_OFFLOAD_READ_THREADS" "$KV_OFFLOAD_WRITE_THREADS")"
 
 mkdir -p "$HF_CACHE" "$VLLM_CACHE_DIR"
 MODEL_ARG="${MODEL_DIR:-$DSPARK_MODEL}"
@@ -84,11 +132,13 @@ docker run -d \
   --ulimit nofile=1048576:1048576 \
   -v "${HF_CACHE}:/cache/huggingface" \
   -v "${VLLM_CACHE_DIR}:/root/.cache" \
+  -v "${KV_OFFLOAD_DISK_DIR}:${KV_OFFLOAD_DISK_DIR}" \
   -e CUDA_VISIBLE_DEVICES="$GPUS" \
   -e CUDA_DEVICE_ORDER=PCI_BUS_ID \
   -e CUDA_HOME=/usr/local/cuda \
   -e FLASHINFER_DISABLE_VERSION_CHECK=1 \
   -e NCCL_P2P_DISABLE=1 \
+  -e PYTHONHASHSEED=0 \
   -e HF_HOME=/cache/huggingface \
   -e HF_HUB_DISABLE_XET="${HF_HUB_DISABLE_XET:-1}" \
   -e HF_TOKEN="${HF_TOKEN:-}" \
@@ -106,10 +156,13 @@ docker run -d \
   --block-size 256 \
   --max-model-len "$MAX_MODEL_LEN" \
   --gpu-memory-utilization "$GPU_MEMORY_UTILIZATION" \
+  --kv-offloading-size "$KV_OFFLOAD_GB" \
+  --kv-offloading-backend native \
+  --kv-transfer-config "$KV_TRANSFER_CONFIG" \
   --kernel-config '{"moe_backend":"marlin"}' \
   --enable-auto-tool-choice \
   --tool-call-parser deepseek_v4 \
   --reasoning-parser deepseek_v4 \
   --trust-remote-code
 
-echo "$CONTAINER_NAME $SERVED_MODEL_NAME stock-sm120 TP=$TP_SIZE EP=1 GPUS=$GPUS PORT=$PORT KV=$KV_CACHE_DTYPE MAX_MODEL_LEN=$MAX_MODEL_LEN"
+echo "$CONTAINER_NAME $SERVED_MODEL_NAME stock-sm120 TP=$TP_SIZE EP=1 GPUS=$GPUS PORT=$PORT KV=$KV_CACHE_DTYPE MAX_MODEL_LEN=$MAX_MODEL_LEN KV_OFFLOAD=${KV_OFFLOAD_GB}GiB+fs:$KV_OFFLOAD_DISK_DIR"

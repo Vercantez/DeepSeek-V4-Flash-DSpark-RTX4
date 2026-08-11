@@ -45,12 +45,37 @@ exit 9
             )
             fake_docker.chmod(0o755)
 
+            fake_findmnt = fake_bin / "findmnt"
+            fake_findmnt.write_text(
+                """#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\n' "$FAKE_FINDMNT_TARGET"
+"""
+            )
+            fake_findmnt.chmod(0o755)
+
+            fake_df = fake_bin / "df"
+            fake_df.write_text(
+                """#!/usr/bin/env bash
+set -euo pipefail
+printf '%s\n' 'Filesystem 1024-blocks Used Available Capacity Mounted on'
+printf '%s\n' '/dev/fake 4294967296 0 4294967296 0% /fake-nvme'
+"""
+            )
+            fake_df.chmod(0o755)
+
+            nvme_mount = temp / "nvme"
+
             env = {
                 "PATH": f"{fake_bin}:{os.environ['PATH']}",
                 "HOME": str(temp),
                 "ENV_FILE": "/dev/null",
                 "HF_CACHE": str(temp / "hf"),
                 "DOCKER_CAPTURE": str(capture),
+                "KV_OFFLOAD_DISK_DIR": str(nvme_mount / "kv-offload"),
+                "KV_OFFLOAD_REQUIRED_MOUNT": str(nvme_mount),
+                "KV_OFFLOAD_MIN_FREE_GB": "1",
+                "FAKE_FINDMNT_TARGET": str(nvme_mount),
                 **overrides,
             }
             result = subprocess.run(
@@ -83,6 +108,11 @@ exit 9
         self.assertEqual(value_for("--max-model-len"), "262144")
         self.assertEqual(value_for("--gpu-memory-utilization"), "0.90")
         self.assertEqual(value_for("--kernel-config"), '{"moe_backend":"marlin"}')
+        self.assertEqual(value_for("--kv-offloading-size"), "256")
+        self.assertEqual(value_for("--kv-offloading-backend"), "native")
+        kv_transfer_config = value_for("--kv-transfer-config")
+        self.assertIn('"spec_name":"TieringOffloadingSpec"', kv_transfer_config)
+        self.assertIn('"type":"fs"', kv_transfer_config)
 
         docker_volumes = {
             args[index + 1]
@@ -98,6 +128,14 @@ exit 9
             ),
             docker_volumes,
         )
+        self.assertTrue(
+            any(
+                (source := volume.split(":", 1)[0]).endswith("/kv-offload")
+                and volume == f"{source}:{source}"
+                for volume in docker_volumes
+            ),
+            docker_volumes,
+        )
 
         docker_env = {
             args[index + 1]
@@ -106,6 +144,7 @@ exit 9
         }
         self.assertIn("FLASHINFER_DISABLE_VERSION_CHECK=1", docker_env)
         self.assertIn("NCCL_P2P_DISABLE=1", docker_env)
+        self.assertIn("PYTHONHASHSEED=0", docker_env)
         self.assertIn("CUDA_HOME=/usr/local/cuda", docker_env)
 
         for custom_flag in (
@@ -115,7 +154,6 @@ exit 9
             "--linear-backend",
             "--moe-backend",
             "--speculative-config",
-            "--kv-transfer-config",
         ):
             self.assertNotIn(custom_flag, args)
 
@@ -125,7 +163,11 @@ exit 9
             ({"DSPARK_NUM_TOKENS": "5"}, "does not support DSpark"),
             ({"KV_CACHE_DTYPE": "fp8_ds_mla"}, "requires KV_CACHE_DTYPE=fp8"),
             ({"MAX_MODEL_LEN": "262145"}, "at or below 262144"),
-            ({"KV_OFFLOAD_GB": "256"}, "does not enable the custom KV offload"),
+            ({"KV_OFFLOAD_GB": "0"}, "positive integer"),
+            (
+                {"FAKE_FINDMNT_TARGET": "/"},
+                "Refusing KV offload",
+            ),
         ):
             with self.subTest(override=override):
                 result, args = self.run_launcher(**override)

@@ -80,9 +80,21 @@ The supported baseline is vLLM 0.25.1, FlashInfer Python 0.6.14 with cubins
 destructively above 256K for one request, so do not raise the per-request cap
 based only on aggregate KV capacity.
 
-The stock profile does not use custom KV offload. Capacity comes from V4's
-compressed sparse-attention cache; adding the former offload flags makes the
-launcher fail closed.
+The stock profile adds vLLM's native tiered KV offloader to the 2,917,131-token
+GPU pool. It reserves 256 GiB of host memory across the four TP workers and
+cascades content-addressed blocks to `/opt/dlami/nvme/kv-offload`. That path is
+bind-mounted into the container at the same absolute path. Before Docker can
+start, the launcher requires the directory to resolve to the dedicated
+`/opt/dlami/nvme` mount and requires at least 1 TiB free; a missing NVMe mount
+therefore fails closed instead of writing into the container or root EBS disk.
+`PYTHONHASHSEED=0` keeps block names stable across process restarts. Stale
+process-local host-memory mmap files are removed before startup, while the
+filesystem cache remains reusable.
+
+KV offload is a lower-tier cache, not permission to raise the 262,144-token
+single-request cap. The sparse indexer still needs GPU scratch memory, and a
+lower-tier cache hit trades recomputation for PCIe/NVMe latency. Compare
+decode-only throughput separately from TTFT when evaluating it.
 
 ## Recovery and verification
 

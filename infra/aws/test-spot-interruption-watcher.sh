@@ -24,10 +24,11 @@ grep -q 'KV_CACHE_DTYPE=fp8' "$script_dir/worker-user-data-s3-nvme.sh"
 grep -q 'MAX_MODEL_LEN=262144' "$script_dir/worker-user-data-s3-nvme.sh"
 grep -q 'VLLM_CACHE_DIR=\$HF_CACHE/vllm-cache-stock-sm120-v0.25.1-fi0.6.14' \
   "$script_dir/worker-user-data-s3-nvme.sh"
-if grep -q 'KV_OFFLOAD_GB=' "$script_dir/worker-user-data-s3-nvme.sh"; then
-  echo 'stock worker user data must not configure custom KV offload' >&2
-  exit 1
-fi
+grep -q 'KV_OFFLOAD_GB=256' "$script_dir/worker-user-data-s3-nvme.sh"
+grep -q 'KV_OFFLOAD_DISK_DIR=/opt/dlami/nvme/kv-offload' \
+  "$script_dir/worker-user-data-s3-nvme.sh"
+grep -q 'KV_OFFLOAD_REQUIRED_MOUNT=/opt/dlami/nvme' \
+  "$script_dir/worker-user-data-s3-nvme.sh"
 
 cat >"$tmp/curl" <<'EOF'
 #!/usr/bin/env bash

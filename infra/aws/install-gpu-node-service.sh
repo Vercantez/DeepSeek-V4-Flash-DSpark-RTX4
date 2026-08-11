@@ -20,6 +20,7 @@ sudo chown -R ubuntu:ubuntu "$(dirname "$HF_CACHE")"
 ENV_FILE="$REPO_DIR/.env.rtx4.stock-sm120"
 sudo -u ubuntu cp "$REPO_DIR/.env.rtx4.stock-sm120.example" "$ENV_FILE"
 sudo -u ubuntu sed -i "s#^HF_CACHE=.*#HF_CACHE=$HF_CACHE#" "$ENV_FILE"
+sudo install -d -o ubuntu -g ubuntu /opt/dlami/nvme/kv-offload
 if [ -d "$HF_CACHE/hub/models--deepseek-ai--DeepSeek-V4-Flash-0731/snapshots" ]; then
   snapshot="$(find "$HF_CACHE/hub/models--deepseek-ai--DeepSeek-V4-Flash-0731/snapshots" -mindepth 1 -maxdepth 1 -type d | sort | tail -1)"
   if [ -n "$snapshot" ]; then
@@ -38,13 +39,14 @@ Description=DeepSeek V4 Flash stock SM120 TP4+EP vLLM service
 After=docker.service network-online.target deepseek-spot-interruption-watcher.service
 Wants=network-online.target deepseek-spot-interruption-watcher.service
 Requires=docker.service
-RequiresMountsFor=$HF_CACHE
+RequiresMountsFor=$HF_CACHE /opt/dlami/nvme
 
 [Service]
 Type=oneshot
 User=ubuntu
 WorkingDirectory=$REPO_DIR
 Environment=ENV_FILE=$ENV_FILE
+ExecStartPre=+/usr/bin/find /dev/shm -maxdepth 1 -type f -name vllm_offload_*.mmap -delete
 ExecStart=$REPO_DIR/start-deepseek-v4-flash-stock-sm120-rtx4.sh
 ExecStop=-/usr/bin/docker rm -f deepseek-v4-flash-stock-sm120-rtx4
 RemainAfterExit=yes
