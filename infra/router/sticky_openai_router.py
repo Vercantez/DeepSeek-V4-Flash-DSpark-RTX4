@@ -109,17 +109,17 @@ BACKEND_PORT = env_int("BACKEND_PORT", 8000)
 DISCOVERY_INTERVAL = env_int("DISCOVERY_INTERVAL", 15)
 HEALTH_TIMEOUT = env_int("HEALTH_TIMEOUT", 3)
 REQUEST_TIMEOUT = env_int("REQUEST_TIMEOUT", 900)
-TTFT_TIMEOUT = env_int("TTFT_TIMEOUT", 20)
+TTFT_TIMEOUT = env_int("TTFT_TIMEOUT", 60)
 # Reject work before it reaches vLLM when it cannot plausibly produce a first
 # token inside the fallback window. The byte cap is deliberately a routing
 # heuristic, not a model context limit: AI Gateway can send rejected requests
-# to another provider while the RTX backend keeps its native 1M context.
-MAX_ADMITTED_REQUEST_BYTES = env_int("MAX_ADMITTED_REQUEST_BYTES", 131_072)
+# to another provider while the RTX backend keeps its configured context.
+MAX_ADMITTED_REQUEST_BYTES = env_int("MAX_ADMITTED_REQUEST_BYTES", 2_097_152)
 MAX_INFLIGHT_REQUESTS = env_int("MAX_INFLIGHT_REQUESTS", 8)
 MODEL_ID = os.environ.get("MODEL_ID", "deepseek-v4-flash-dspark")
-MODEL_MAX_CONTEXT_TOKENS = env_int("MODEL_MAX_CONTEXT_TOKENS", 262_144)
-MODEL_WORKING_CONTEXT_TOKENS = env_int("MODEL_WORKING_CONTEXT_TOKENS", 262_144)
-MODEL_MAX_OUTPUT_TOKENS = env_int("MODEL_MAX_OUTPUT_TOKENS", 262_144)
+MODEL_MAX_CONTEXT_TOKENS = env_int("MODEL_MAX_CONTEXT_TOKENS", 524_288)
+MODEL_WORKING_CONTEXT_TOKENS = env_int("MODEL_WORKING_CONTEXT_TOKENS", 524_288)
+MODEL_MAX_OUTPUT_TOKENS = env_int("MODEL_MAX_OUTPUT_TOKENS", 524_288)
 AWS_REGION = os.environ.get("AWS_REGION", "us-east-2")
 AWS_ASG_NAME = os.environ.get("AWS_ASG_NAME", "")
 # Comma-separated `region:auto-scaling-group` targets. This lets one router

@@ -74,11 +74,12 @@ OpenAI-compatible.
 
 The supported baseline is vLLM 0.25.1, FlashInfer Python 0.6.14 with cubins
 0.6.13, TP=4, expert parallelism, FP8 KV, block size 256, max model length
-262,144, and GPU memory utilization 0.90. The isolated reference host allocated
-2,917,131 KV tokens (11.13 full 256K contexts) and passed exact correctness at
-1, 16, and 64 concurrent streams. The stock sparse-prefill backend can fail
-destructively above 256K for one request, so do not raise the per-request cap
-based only on aggregate KV capacity.
+524,288, and GPU memory utilization 0.90. The isolated reference host allocated
+4,643,036 KV tokens (8.86 full 512K contexts). Before promotion, real 270,005-
+and 480,005-token prefills completed successfully; the 480K request returned
+its first output after 51.9 seconds. Repeat near-ceiling prefills when changing
+the vLLM, FlashInfer, CUDA, or model build because this path was previously
+known to fail above 256K on older SM120 sparse-prefill implementations.
 
 The stock profile adds vLLM's native tiered KV offloader to the 2,917,131-token
 GPU pool. It reserves 256 GiB of host memory across the four TP workers and
@@ -94,10 +95,10 @@ container or root EBS disk.
 process-local host-memory mmap files are removed before startup, while the
 filesystem cache remains reusable.
 
-KV offload is a lower-tier cache, not permission to raise the 262,144-token
-single-request cap. The sparse indexer still needs GPU scratch memory, and a
-lower-tier cache hit trades recomputation for PCIe/NVMe latency. Compare
-decode-only throughput separately from TTFT when evaluating it.
+KV offload is a lower-tier cache and does not extend the 524,288-token model
+limit. The sparse indexer still needs GPU scratch memory, and a lower-tier
+cache hit trades recomputation for PCIe/NVMe latency. Compare decode-only
+throughput separately from TTFT when evaluating it.
 
 ## Recovery and verification
 

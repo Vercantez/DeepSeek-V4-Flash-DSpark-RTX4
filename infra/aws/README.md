@@ -13,7 +13,7 @@ This directory contains the deployment shape for serving DeepSeek V4 Flash on
   - one TP=4 replica with expert parallelism enabled
   - FP8 KV cache with 256-token blocks
   - Marlin MXFP4 MoE kernels
-  - `MAX_MODEL_LEN=262144`
+  - `MAX_MODEL_LEN=524288`
   - DCP disabled and speculative decoding disabled
 - A small on-demand router node runs `deepseek-sticky-router.service`.
 - The router discovers healthy ASG workers through AWS APIs and forwards
@@ -84,9 +84,9 @@ The router maps the shared default/output guardrails to each native schema:
 endpoint and its final chat-generation validation can account for templates
 differently. Instead, the deployed model contract is explicit:
 
-- hard context limit: `262144` tokens
-- application working context: `262144` tokens
-- maximum output: `262144` tokens for an empty prompt
+- hard context limit: `524288` tokens
+- application working context: `524288` tokens
+- maximum output: `524288` tokens for an empty prompt
 
 The application may compact before the model's native limit. By default, the
 router preserves the caller's `max_tokens`; vLLM enforces the native context
@@ -98,15 +98,15 @@ authority for hard context validation.
 headers and, for streaming requests, through the first SSE body event. On
 expiry the router closes the vLLM socket and returns `504`, allowing AI Gateway
 to fall back without leaving the timed-out generation queued on the GPU
-worker. Keep the AI Gateway model-node timeout above this router-owned
-deadline.
+worker. Its production default is 60 seconds. Keep the AI Gateway model-node
+timeout above this router-owned deadline.
 
 The router also rejects work before vLLM admission when the serialized request
-is larger than `MAX_ADMITTED_REQUEST_BYTES` (default `131072`) or when
+is larger than `MAX_ADMITTED_REQUEST_BYTES` (default `2097152`) or when
 `MAX_INFLIGHT_REQUESTS` (default `8`) requests are already active. These are
 fast `503` responses intended to activate the AI Gateway fallback without
 polluting vLLM's queue or KV spill tier. They are routing controls, not context
-limits: the RTX model retains its configured 256K context window, and setting the byte
+limits: the RTX model retains its configured 512K context window, and setting the byte
 limit to `0` disables only the size-based admission check.
 
 ## Worker Startup

@@ -105,7 +105,7 @@ printf '%s\n' '/dev/fake 4294967296 0 4294967296 0% /fake-nvme'
         self.assertIn("--enable-expert-parallel", args)
         self.assertEqual(value_for("--kv-cache-dtype"), "fp8")
         self.assertEqual(value_for("--block-size"), "256")
-        self.assertEqual(value_for("--max-model-len"), "262144")
+        self.assertEqual(value_for("--max-model-len"), "524288")
         self.assertEqual(value_for("--gpu-memory-utilization"), "0.90")
         self.assertEqual(value_for("--kernel-config"), '{"moe_backend":"marlin"}')
         self.assertEqual(value_for("--kv-offloading-size"), "256")
@@ -162,7 +162,7 @@ printf '%s\n' '/dev/fake 4294967296 0 4294967296 0% /fake-nvme'
             ({"DCP_SIZE": "2"}, "does not support DCP"),
             ({"DSPARK_NUM_TOKENS": "5"}, "does not support DSpark"),
             ({"KV_CACHE_DTYPE": "fp8_ds_mla"}, "requires KV_CACHE_DTYPE=fp8"),
-            ({"MAX_MODEL_LEN": "262145"}, "at or below 262144"),
+            ({"MAX_MODEL_LEN": "524289"}, "at or below 524288"),
             ({"KV_OFFLOAD_GB": "0"}, "positive integer"),
             (
                 {"FAKE_FINDMNT_TARGET": "/"},

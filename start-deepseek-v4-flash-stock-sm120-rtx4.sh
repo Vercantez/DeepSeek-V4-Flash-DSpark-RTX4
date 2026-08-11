@@ -29,7 +29,7 @@ fi
 : "${DCP_SIZE:=1}"
 : "${DSPARK_NUM_TOKENS:=0}"
 : "${KV_CACHE_DTYPE:=fp8}"
-: "${MAX_MODEL_LEN:=262144}"
+: "${MAX_MODEL_LEN:=524288}"
 : "${GPU_MEMORY_UTILIZATION:=0.90}"
 : "${KV_OFFLOAD_GB:=256}"
 : "${KV_OFFLOAD_DISK_DIR:=/opt/dlami/nvme/kv-offload}"
@@ -55,8 +55,8 @@ if [ "$KV_CACHE_DTYPE" != "fp8" ]; then
   echo "stock-sm120 requires KV_CACHE_DTYPE=fp8, got $KV_CACHE_DTYPE" >&2
   exit 2
 fi
-if ! [[ "$MAX_MODEL_LEN" =~ ^[1-9][0-9]*$ ]] || (( MAX_MODEL_LEN > 262144 )); then
-  echo "stock-sm120 requires MAX_MODEL_LEN to be an integer at or below 262144, got $MAX_MODEL_LEN" >&2
+if ! [[ "$MAX_MODEL_LEN" =~ ^[1-9][0-9]*$ ]] || (( MAX_MODEL_LEN > 524288 )); then
+  echo "stock-sm120 requires MAX_MODEL_LEN to be an integer at or below 524288, got $MAX_MODEL_LEN" >&2
   exit 2
 fi
 if ! [[ "$KV_OFFLOAD_GB" =~ ^[1-9][0-9]*$ ]]; then

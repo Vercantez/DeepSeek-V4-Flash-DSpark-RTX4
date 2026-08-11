@@ -116,7 +116,7 @@ printf '%s\n' \
   "KV_OFFLOAD_MIN_FREE_GB=1024" \
   "DCP_SIZE=1" \
   "DSPARK_NUM_TOKENS=0" \
-  "MAX_MODEL_LEN=262144" >>"$env_file"
+  "MAX_MODEL_LEN=524288" >>"$env_file"
 KV_OFFLOAD_DISK_DIR=/opt/dlami/nvme/kv-offload \
 KV_OFFLOAD_IMAGE=/opt/dlami/nvme/.kv-offload.ext4 \
 KV_OFFLOAD_MAX_DISK_GB=4096 \
