@@ -101,7 +101,7 @@ sudo -u ubuntu git -C "$repo" pull --ff-only origin main
 
 install -o ubuntu -g ubuntu -m 600 \
   "$repo/.env.rtx4.stock-sm120.example" "$env_file"
-sed -i '/^HF_CACHE=/d; /^MODEL_DIR=/d; /^VLLM_CACHE_DIR=/d; /^DSPARK_VLLM_IMAGE=/d; /^KV_CACHE_DTYPE=/d; /^KV_OFFLOAD_GB=/d; /^KV_OFFLOAD_DISK_DIR=/d; /^KV_OFFLOAD_REQUIRED_MOUNT=/d; /^KV_OFFLOAD_MIN_FREE_GB=/d; /^DCP_SIZE=/d; /^DSPARK_NUM_TOKENS=/d; /^MAX_MODEL_LEN=/d' "$env_file"
+sed -i '/^HF_CACHE=/d; /^MODEL_DIR=/d; /^VLLM_CACHE_DIR=/d; /^DSPARK_VLLM_IMAGE=/d; /^KV_CACHE_DTYPE=/d; /^KV_OFFLOAD_GB=/d; /^KV_OFFLOAD_DISK_DIR=/d; /^KV_OFFLOAD_REQUIRED_MOUNT=/d; /^KV_OFFLOAD_IMAGE=/d; /^KV_OFFLOAD_MAX_DISK_GB=/d; /^KV_OFFLOAD_MIN_FREE_GB=/d; /^DCP_SIZE=/d; /^DSPARK_NUM_TOKENS=/d; /^MAX_MODEL_LEN=/d' "$env_file"
 printf '%s\n' \
   "HF_CACHE=$HF_CACHE" \
   "MODEL_DIR=/cache/huggingface/$model_dir_rel" \
@@ -110,12 +110,17 @@ printf '%s\n' \
   "KV_CACHE_DTYPE=fp8" \
   "KV_OFFLOAD_GB=256" \
   "KV_OFFLOAD_DISK_DIR=/opt/dlami/nvme/kv-offload" \
-  "KV_OFFLOAD_REQUIRED_MOUNT=/opt/dlami/nvme" \
+  "KV_OFFLOAD_REQUIRED_MOUNT=/opt/dlami/nvme/kv-offload" \
+  "KV_OFFLOAD_IMAGE=/opt/dlami/nvme/.kv-offload.ext4" \
+  "KV_OFFLOAD_MAX_DISK_GB=4096" \
   "KV_OFFLOAD_MIN_FREE_GB=1024" \
   "DCP_SIZE=1" \
   "DSPARK_NUM_TOKENS=0" \
   "MAX_MODEL_LEN=262144" >>"$env_file"
-install -d -o ubuntu -g ubuntu /opt/dlami/nvme/kv-offload
+KV_OFFLOAD_DISK_DIR=/opt/dlami/nvme/kv-offload \
+KV_OFFLOAD_IMAGE=/opt/dlami/nvme/.kv-offload.ext4 \
+KV_OFFLOAD_MAX_DISK_GB=4096 \
+  "$repo/infra/aws/prepare-kv-offload-nvme.sh"
 
 # The stock image should be baked into the worker AMI. Keep this deterministic
 # fallback so an older regional AMI can still bootstrap after its launch
@@ -130,7 +135,7 @@ install -d /etc/systemd/system/deepseek-rtx4.service.d
 rm -f /etc/systemd/system/deepseek-rtx4.service.d/cleanup-offload.conf
 cat >/etc/systemd/system/deepseek-rtx4.service.d/stock-sm120.conf <<EOF
 [Unit]
-RequiresMountsFor=/opt/dlami/nvme
+RequiresMountsFor=/opt/dlami/nvme/kv-offload
 
 [Service]
 Environment=ENV_FILE=$env_file

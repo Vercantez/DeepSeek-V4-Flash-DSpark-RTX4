@@ -83,10 +83,13 @@ based only on aggregate KV capacity.
 The stock profile adds vLLM's native tiered KV offloader to the 2,917,131-token
 GPU pool. It reserves 256 GiB of host memory across the four TP workers and
 cascades content-addressed blocks to `/opt/dlami/nvme/kv-offload`. That path is
-bind-mounted into the container at the same absolute path. Before Docker can
-start, the launcher requires the directory to resolve to the dedicated
-`/opt/dlami/nvme` mount and requires at least 1 TiB free; a missing NVMe mount
-therefore fails closed instead of writing into the container or root EBS disk.
+a 4 TiB ext4 loop filesystem backed by a sparse image on local instance-store
+NVMe, then bind-mounted into the container at the same absolute path. The hard
+4 TiB boundary prevents vLLM's otherwise unbounded filesystem cache from
+consuming the entire model filesystem. Before Docker can start, the launcher
+requires the directory to resolve to that dedicated mount and requires at least
+1 TiB free; a missing mount therefore fails closed instead of writing into the
+container or root EBS disk.
 `PYTHONHASHSEED=0` keeps block names stable across process restarts. Stale
 process-local host-memory mmap files are removed before startup, while the
 filesystem cache remains reusable.

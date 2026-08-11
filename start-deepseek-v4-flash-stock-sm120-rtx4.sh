@@ -33,7 +33,7 @@ fi
 : "${GPU_MEMORY_UTILIZATION:=0.90}"
 : "${KV_OFFLOAD_GB:=256}"
 : "${KV_OFFLOAD_DISK_DIR:=/opt/dlami/nvme/kv-offload}"
-: "${KV_OFFLOAD_REQUIRED_MOUNT:=/opt/dlami/nvme}"
+: "${KV_OFFLOAD_REQUIRED_MOUNT:=/opt/dlami/nvme/kv-offload}"
 : "${KV_OFFLOAD_MIN_FREE_GB:=1024}"
 : "${KV_OFFLOAD_READ_THREADS:=32}"
 : "${KV_OFFLOAD_WRITE_THREADS:=16}"

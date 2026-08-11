@@ -13,6 +13,7 @@ bash -n "$script_dir/worker-user-data-s3-nvme.sh"
 bash -n "$script_dir/publish-s3-runtime-cache.sh"
 bash -n "$script_dir/replicate-s3-runtime-cache.sh"
 bash -n "$script_dir/promote-s3-nvme-launch-template.sh"
+bash -n "$script_dir/prepare-kv-offload-nvme.sh"
 
 grep -q 'env_file="\$repo/.env.rtx4.stock-sm120"' \
   "$script_dir/worker-user-data-s3-nvme.sh"
@@ -27,8 +28,14 @@ grep -q 'VLLM_CACHE_DIR=\$HF_CACHE/vllm-cache-stock-sm120-v0.25.1-fi0.6.14' \
 grep -q 'KV_OFFLOAD_GB=256' "$script_dir/worker-user-data-s3-nvme.sh"
 grep -q 'KV_OFFLOAD_DISK_DIR=/opt/dlami/nvme/kv-offload' \
   "$script_dir/worker-user-data-s3-nvme.sh"
-grep -q 'KV_OFFLOAD_REQUIRED_MOUNT=/opt/dlami/nvme' \
+grep -q 'KV_OFFLOAD_REQUIRED_MOUNT=/opt/dlami/nvme/kv-offload' \
   "$script_dir/worker-user-data-s3-nvme.sh"
+grep -q 'KV_OFFLOAD_MAX_DISK_GB=4096' \
+  "$script_dir/worker-user-data-s3-nvme.sh"
+grep -q 'mkfs.ext4.*' "$script_dir/prepare-kv-offload-nvme.sh"
+grep -q 'mount -o loop,noatime,nodiratime' \
+  "$script_dir/prepare-kv-offload-nvme.sh"
+grep -q -- '-T largefile4' "$script_dir/prepare-kv-offload-nvme.sh"
 
 cat >"$tmp/curl" <<'EOF'
 #!/usr/bin/env bash
