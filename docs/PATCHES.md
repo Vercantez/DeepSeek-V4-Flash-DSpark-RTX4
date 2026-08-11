@@ -162,3 +162,17 @@ image. This is intentionally separate from the July 4 Eldritch/B12X overlay:
 the upstream PR implements DeepSeek-V4's DCP-aware decode/LSE merge, compressor
 state merge, compressed-cache writes, and local KV/index mapping as one data
 layout change.
+
+# Stock SM120 Marlin MoE temporary-buffer fix
+
+`patches/vllm-v0.25.1-sm120-marlin-c-tmp.patch` carries the narrow CUDA fix
+from [vLLM PR #43730](https://github.com/vllm-project/vllm/pull/43730) onto the
+exact vLLM 0.25.1 source commit used by the production RTX PRO 6000 profile.
+It removes the data-dependent clamp that can undersize Marlin MoE's FP32
+reduction buffer and launches the kernel with the selected configuration's
+shared-memory size while preserving the device maximum for the CUDA function
+attribute.
+
+`build-stock-sm120-vllm-runtime.sh` applies the patch fail-closed and compiles
+vLLM from source. Do not convert this into a Python-only Docker overlay: the
+affected implementation lives in vLLM's precompiled `_C` extension.

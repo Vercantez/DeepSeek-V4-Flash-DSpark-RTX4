@@ -106,7 +106,7 @@ printf '%s\n' \
   "HF_CACHE=$HF_CACHE" \
   "MODEL_DIR=/cache/huggingface/$model_dir_rel" \
   "VLLM_CACHE_DIR=$HF_CACHE/vllm-cache-stock-sm120-v0.25.1-fi0.6.14" \
-  "DSPARK_VLLM_IMAGE=vllm-dspark-runtime:stock-sm120-vllm-0.25.1" \
+  "DSPARK_VLLM_IMAGE=vllm-dspark-runtime:stock-sm120-vllm-0.25.1-marlin-c-tmp-v1" \
   "KV_CACHE_DTYPE=fp8" \
   "KV_OFFLOAD_GB=256" \
   "KV_OFFLOAD_DISK_DIR=/opt/dlami/nvme/kv-offload" \
@@ -125,10 +125,8 @@ KV_OFFLOAD_MAX_DISK_GB=4096 \
 # The stock image should be baked into the worker AMI. Keep this deterministic
 # fallback so an older regional AMI can still bootstrap after its launch
 # template is promoted.
-if ! docker image inspect vllm-dspark-runtime:stock-sm120-vllm-0.25.1 >/dev/null 2>&1; then
-  docker build --pull=false \
-    -f "$repo/recipe/rtx4/Dockerfile.stock-sm120" \
-    -t vllm-dspark-runtime:stock-sm120-vllm-0.25.1 "$repo"
+if ! docker image inspect vllm-dspark-runtime:stock-sm120-vllm-0.25.1-marlin-c-tmp-v1 >/dev/null 2>&1; then
+  "$repo/build-stock-sm120-vllm-runtime.sh"
 fi
 
 install -d /etc/systemd/system/deepseek-rtx4.service.d

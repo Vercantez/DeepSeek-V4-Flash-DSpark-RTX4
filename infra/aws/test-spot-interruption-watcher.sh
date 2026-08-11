@@ -25,6 +25,10 @@ grep -q 'KV_CACHE_DTYPE=fp8' "$script_dir/worker-user-data-s3-nvme.sh"
 grep -q 'MAX_MODEL_LEN=262144' "$script_dir/worker-user-data-s3-nvme.sh"
 grep -q 'VLLM_CACHE_DIR=\$HF_CACHE/vllm-cache-stock-sm120-v0.25.1-fi0.6.14' \
   "$script_dir/worker-user-data-s3-nvme.sh"
+grep -q 'stock-sm120-vllm-0.25.1-marlin-c-tmp-v1' \
+  "$script_dir/worker-user-data-s3-nvme.sh"
+grep -q 'build-stock-sm120-vllm-runtime.sh' \
+  "$script_dir/worker-user-data-s3-nvme.sh"
 grep -q 'KV_OFFLOAD_GB=256' "$script_dir/worker-user-data-s3-nvme.sh"
 grep -q 'KV_OFFLOAD_DISK_DIR=/opt/dlami/nvme/kv-offload' \
   "$script_dir/worker-user-data-s3-nvme.sh"

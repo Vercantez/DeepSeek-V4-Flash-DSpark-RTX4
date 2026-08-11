@@ -74,7 +74,10 @@ OpenAI-compatible.
 
 The supported baseline is vLLM 0.25.1, FlashInfer Python 0.6.14 with cubins
 0.6.13, TP=4, expert parallelism, FP8 KV, block size 256, max model length
-262,144, and GPU memory utilization 0.90. The isolated reference host allocated
+262,144, and GPU memory utilization 0.90. vLLM is built from the exact 0.25.1
+source commit with the SM120 Marlin MoE `c_tmp` sizing and kernel shared-memory
+launch fix compiled into `_C`; do not replace it with the unpatched official
+0.25.1 image. The isolated reference host allocated
 4,643,036 KV tokens (17.71 full 256K contexts). Earlier canaries completed
 270,005- and 480,005-token prefills, but production was capped back to 256K
 after an SM120 sparse-attention CUDA Xid 31 crash under concurrent traffic.

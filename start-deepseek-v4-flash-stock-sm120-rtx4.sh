@@ -18,7 +18,7 @@ fi
 
 : "${DSPARK_MODEL:=deepseek-ai/DeepSeek-V4-Flash-DSpark}"
 : "${SERVED_MODEL_NAME:=deepseek-v4-flash-dspark}"
-: "${DSPARK_VLLM_IMAGE:=vllm-dspark-runtime:stock-sm120-vllm-0.25.1}"
+: "${DSPARK_VLLM_IMAGE:=vllm-dspark-runtime:stock-sm120-vllm-0.25.1-marlin-c-tmp-v1}"
 : "${CONTAINER_NAME:=deepseek-v4-flash-stock-sm120-rtx4}"
 : "${HF_CACHE:=$HOME/.cache/huggingface}"
 : "${VLLM_CACHE_DIR:=$HF_CACHE/vllm-cache-stock-sm120-v0.25.1-fi0.6.14}"

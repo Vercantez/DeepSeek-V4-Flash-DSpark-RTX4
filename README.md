@@ -48,9 +48,7 @@ Needs a g7e.24xlarge (or equivalent 4× RTX PRO 6000), Docker, and enough fast d
 
 ```bash
 # 1. Build the pinned stock SM120 runtime
-docker pull vllm/vllm-openai:v0.25.1
-docker build -f recipe/rtx4/Dockerfile.stock-sm120 \
-  -t vllm-dspark-runtime:stock-sm120-vllm-0.25.1 .
+./build-stock-sm120-vllm-runtime.sh
 
 # 2. Configure
 cp .env.rtx4.stock-sm120.example .env.rtx4.stock-sm120
@@ -64,6 +62,12 @@ cp .env.rtx4.stock-sm120.example .env.rtx4.stock-sm120
 ./status-deepseek-v4-flash-dspark-rtx4.sh
 ./smoke-deepseek-v4-flash-dspark.sh
 ```
+
+The build pins the exact vLLM 0.25.1 source commit and compiles the upstream
+SM120 Marlin MoE `c_tmp`/shared-memory correction into the CUDA extension.
+The patch is intentionally source-built: layering Python files onto the
+official runtime would leave its vulnerable precompiled `_C` extension in
+place.
 
 OpenAI-compatible API defaults to `http://<host>:8000/v1`.
 

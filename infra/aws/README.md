@@ -28,6 +28,11 @@ protocol translation layer:
 - `POST /v1/messages`
 - `POST /v1/messages/count_tokens`
 
+The stock runtime is compiled from the pinned vLLM 0.25.1 source commit with
+the SM120 Marlin MoE `c_tmp` and shared-memory launch fix. New workers build
+that exact image as a deterministic fallback when the runtime AMI does not
+already contain it.
+
 For multi-region workers, set `AWS_ASG_TARGETS` on the router. It accepts a
 comma-separated list of `region:auto-scaling-group` values, for example:
 

@@ -1,12 +1,22 @@
-ARG BASE_IMAGE=vllm/vllm-openai:v0.25.1
+ARG BASE_IMAGE=vllm-dspark-runtime:vllm-0.25.1-marlin-c-tmp-v1-base
 FROM ${BASE_IMAGE}
 
-# Hermia's validated SM120 recipe is stock vLLM 0.25.1 with only the
-# FlashInfer wheel updated to 0.6.14. No vLLM source patches are applied.
+# The base image is built by build-stock-sm120-vllm-runtime.sh from the exact
+# vLLM v0.25.1 source commit with the upstream Marlin MoE c_tmp/shared-memory
+# fix compiled in. A source build is required because _C is precompiled in the
+# official runtime image and cannot be corrected by a Python overlay.
+#
+# Hermia's validated SM120 recipe otherwise changes only the FlashInfer Python
+# wheel to 0.6.14.
 # Keep the base image's 0.6.13 cubin: PyPI has no 0.6.14 cubin release, and
 # FLASHINFER_DISABLE_VERSION_CHECK is the upstream recipe's required bridge.
+ARG VLLM_SOURCE_COMMIT=752a3a504485790a2e8491cacbb35c137339ad34
+ARG MARLIN_FIX=c-tmp-v1
 RUN uv pip install --system --upgrade --no-deps --no-cache \
         "flashinfer-python==0.6.14" \
     && python3 -c 'from importlib.metadata import version; assert version("vllm") == "0.25.1"; assert version("flashinfer-python") == "0.6.14"; assert version("flashinfer-cubin") == "0.6.13"'
+
+LABEL ai.camel.vllm.source_commit=${VLLM_SOURCE_COMMIT} \
+      ai.camel.vllm.marlin_fix=${MARLIN_FIX}
 
 ENV FLASHINFER_DISABLE_VERSION_CHECK=1

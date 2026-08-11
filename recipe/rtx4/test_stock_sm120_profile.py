@@ -13,6 +13,9 @@ import unittest
 REPO_ROOT = Path(__file__).resolve().parents[2]
 LAUNCHER = REPO_ROOT / "start-deepseek-v4-flash-stock-sm120-rtx4.sh"
 DOCKERFILE = REPO_ROOT / "recipe/rtx4/Dockerfile.stock-sm120"
+BUILD_SCRIPT = REPO_ROOT / "build-stock-sm120-vllm-runtime.sh"
+MARLIN_PATCH = REPO_ROOT / "patches/vllm-v0.25.1-sm120-marlin-c-tmp.patch"
+IMAGE = "vllm-dspark-runtime:stock-sm120-vllm-0.25.1-marlin-c-tmp-v1"
 
 
 class StockSm120ProfileTest(unittest.TestCase):
@@ -106,7 +109,7 @@ printf '%s\n' '/dev/fake 4294967296 0 4294967296 0% /fake-nvme'
             index = args.index(flag)
             return args[index + 1]
 
-        self.assertIn("vllm-dspark-runtime:stock-sm120-vllm-0.25.1", args)
+        self.assertIn(IMAGE, args)
         self.assertEqual(value_for("--tensor-parallel-size"), "4")
         self.assertIn("--enable-expert-parallel", args)
         self.assertEqual(value_for("--kv-cache-dtype"), "fp8")
@@ -181,13 +184,30 @@ printf '%s\n' '/dev/fake 4294967296 0 4294967296 0% /fake-nvme'
                 self.assertIn(expected, result.stderr)
                 self.assertEqual(args, [])
 
-    def test_runtime_is_stock_and_pinned(self) -> None:
+    def test_runtime_is_source_patched_and_pinned(self) -> None:
         dockerfile = DOCKERFILE.read_text()
-        self.assertIn("vllm/vllm-openai:v0.25.1", dockerfile)
+        build_script = BUILD_SCRIPT.read_text()
+        marlin_patch = MARLIN_PATCH.read_text()
+
+        self.assertIn(
+            "vllm-dspark-runtime:vllm-0.25.1-marlin-c-tmp-v1-base",
+            dockerfile,
+        )
         self.assertIn('flashinfer-python==0.6.14', dockerfile)
         self.assertIn('--no-deps', dockerfile)
         self.assertIn('version("flashinfer-cubin") == "0.6.13"', dockerfile)
         self.assertNotIn("COPY ", dockerfile)
+
+        self.assertIn("752a3a504485790a2e8491cacbb35c137339ad34", build_script)
+        self.assertIn("git -C \"$build_root\" apply --check", build_script)
+        self.assertIn("--target vllm-openai", build_script)
+        self.assertIn(IMAGE, build_script)
+        self.assertIn("device_max_shared_mem", marlin_patch)
+        self.assertIn("sh_cache_size, stream", marlin_patch)
+        self.assertIn(
+            "(long)sms * 4 * moe_block_size * MARLIN_NAMESPACE_NAME::max_thread_n",
+            marlin_patch,
+        )
 
 
 if __name__ == "__main__":
