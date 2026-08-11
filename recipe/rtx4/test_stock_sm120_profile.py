@@ -97,6 +97,10 @@ printf '%s\n' '/dev/fake 4294967296 0 4294967296 0% /fake-nvme'
         self.assertEqual(args[0], "run")
         self.assertIn("--restart", args)
         self.assertEqual(args[args.index("--restart") + 1], "unless-stopped")
+        container_startup = args[args.index("-lc") + 1]
+        self.assertIn('find /dev/shm', container_startup)
+        self.assertIn('vllm_offload_*.mmap', container_startup)
+        self.assertLess(container_startup.index("find /dev/shm"), container_startup.index("exec vllm"))
 
         def value_for(flag: str) -> str:
             index = args.index(flag)

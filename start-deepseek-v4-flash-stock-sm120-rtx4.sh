@@ -146,7 +146,7 @@ docker run -d \
   -e HUGGING_FACE_HUB_TOKEN="${HUGGING_FACE_HUB_TOKEN:-${HF_TOKEN:-}}" \
   --entrypoint /bin/bash \
   "$DSPARK_VLLM_IMAGE" \
-  -lc 'export PATH="$CUDA_HOME/bin:$PATH"; exec vllm serve "$@"' \
+  -lc 'find /dev/shm -maxdepth 1 -type f -name "vllm_offload_*.mmap" -delete; export PATH="$CUDA_HOME/bin:$PATH"; exec vllm serve "$@"' \
   -- "$MODEL_ARG" \
   --served-model-name "$SERVED_MODEL_NAME" \
   --host "$VLLM_HOST" \
