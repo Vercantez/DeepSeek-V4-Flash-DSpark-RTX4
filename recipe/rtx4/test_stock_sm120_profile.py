@@ -199,6 +199,8 @@ printf '%s\n' '/dev/fake 4294967296 0 4294967296 0% /fake-nvme'
         self.assertNotIn("COPY ", dockerfile)
 
         self.assertIn("752a3a504485790a2e8491cacbb35c137339ad34", build_script)
+        self.assertIn('VLLM_SOURCE_VERSION=${VLLM_SOURCE_VERSION:-0.25.1}', build_script)
+        self.assertIn('git -C "$build_root" tag --force', build_script)
         self.assertIn('python3 "$PATCHER" "$source_file" --check', build_script)
         self.assertIn("--target vllm-openai", build_script)
         self.assertIn(IMAGE, build_script)

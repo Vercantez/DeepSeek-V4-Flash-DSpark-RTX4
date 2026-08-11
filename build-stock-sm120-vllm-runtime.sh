@@ -9,6 +9,7 @@ set -euo pipefail
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 VLLM_REPO_URL=${VLLM_REPO_URL:-https://github.com/vllm-project/vllm.git}
 VLLM_SOURCE_COMMIT=${VLLM_SOURCE_COMMIT:-752a3a504485790a2e8491cacbb35c137339ad34}
+VLLM_SOURCE_VERSION=${VLLM_SOURCE_VERSION:-0.25.1}
 PATCHER=${PATCHER:-$SCRIPT_DIR/recipe/rtx4/patch_sm120_marlin.py}
 PATCHED_BASE_IMAGE=${PATCHED_BASE_IMAGE:-vllm-dspark-runtime:vllm-0.25.1-marlin-c-tmp-v1-base}
 FINAL_IMAGE=${FINAL_IMAGE:-vllm-dspark-runtime:stock-sm120-vllm-0.25.1-marlin-c-tmp-v1}
@@ -37,6 +38,12 @@ if [ "$actual_commit" != "$VLLM_SOURCE_COMMIT" ]; then
   echo "vLLM source drift: expected $VLLM_SOURCE_COMMIT, got $actual_commit" >&2
   exit 1
 fi
+
+# A fetch by raw commit does not bring the release tag into the shallow clone.
+# setuptools-scm would consequently publish a misleading 0.1.dev package
+# version even though the source is exactly v0.25.1. Attach the known release
+# tag locally so the runtime and its provenance checks report the real version.
+git -C "$build_root" tag --force "v$VLLM_SOURCE_VERSION" "$VLLM_SOURCE_COMMIT"
 
 source_file="$build_root/csrc/libtorch_stable/moe/marlin_moe_wna16/ops.cu"
 python3 "$PATCHER" "$source_file" --check
