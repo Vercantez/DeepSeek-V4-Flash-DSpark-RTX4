@@ -84,6 +84,16 @@ exit 9
         self.assertEqual(value_for("--gpu-memory-utilization"), "0.90")
         self.assertEqual(value_for("--kernel-config"), '{"moe_backend":"marlin"}')
 
+        docker_volumes = {
+            args[index + 1]
+            for index, arg in enumerate(args[:-1])
+            if arg == "-v"
+        }
+        self.assertTrue(
+            any(volume.endswith("/hf/vllm-cache:/root/.cache") for volume in docker_volumes),
+            docker_volumes,
+        )
+
         docker_env = {
             args[index + 1]
             for index, arg in enumerate(args[:-1])

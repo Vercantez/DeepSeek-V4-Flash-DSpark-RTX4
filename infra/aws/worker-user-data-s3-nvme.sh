@@ -101,10 +101,11 @@ sudo -u ubuntu git -C "$repo" pull --ff-only origin main
 
 install -o ubuntu -g ubuntu -m 600 \
   "$repo/.env.rtx4.stock-sm120.example" "$env_file"
-sed -i '/^HF_CACHE=/d; /^MODEL_DIR=/d; /^DSPARK_VLLM_IMAGE=/d; /^KV_CACHE_DTYPE=/d; /^DCP_SIZE=/d; /^DSPARK_NUM_TOKENS=/d; /^MAX_MODEL_LEN=/d' "$env_file"
+sed -i '/^HF_CACHE=/d; /^MODEL_DIR=/d; /^VLLM_CACHE_DIR=/d; /^DSPARK_VLLM_IMAGE=/d; /^KV_CACHE_DTYPE=/d; /^DCP_SIZE=/d; /^DSPARK_NUM_TOKENS=/d; /^MAX_MODEL_LEN=/d' "$env_file"
 printf '%s\n' \
   "HF_CACHE=$HF_CACHE" \
   "MODEL_DIR=/cache/huggingface/$model_dir_rel" \
+  "VLLM_CACHE_DIR=$HF_CACHE/vllm-cache" \
   "DSPARK_VLLM_IMAGE=vllm-dspark-runtime:stock-sm120-vllm-0.25.1" \
   "KV_CACHE_DTYPE=fp8" \
   "DCP_SIZE=1" \

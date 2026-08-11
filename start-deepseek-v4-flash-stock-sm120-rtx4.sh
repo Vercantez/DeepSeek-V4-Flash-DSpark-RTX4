@@ -21,6 +21,7 @@ fi
 : "${DSPARK_VLLM_IMAGE:=vllm-dspark-runtime:stock-sm120-vllm-0.25.1}"
 : "${CONTAINER_NAME:=deepseek-v4-flash-stock-sm120-rtx4}"
 : "${HF_CACHE:=$HOME/.cache/huggingface}"
+: "${VLLM_CACHE_DIR:=$HF_CACHE/vllm-cache}"
 : "${VLLM_HOST:=0.0.0.0}"
 : "${PORT:=8000}"
 : "${GPUS:=0,1,2,3}"
@@ -57,7 +58,7 @@ if [ -n "${KV_OFFLOAD_GB:-}" ] || [ -n "${KV_OFFLOAD_DISK_DIR:-}" ]; then
   exit 2
 fi
 
-mkdir -p "$HF_CACHE"
+mkdir -p "$HF_CACHE" "$VLLM_CACHE_DIR"
 MODEL_ARG="${MODEL_DIR:-$DSPARK_MODEL}"
 
 if [ "$PULL_IMAGE" = "1" ]; then
@@ -82,6 +83,7 @@ docker run -d \
   --ulimit stack=67108864 \
   --ulimit nofile=1048576:1048576 \
   -v "${HF_CACHE}:/cache/huggingface" \
+  -v "${VLLM_CACHE_DIR}:/root/.cache" \
   -e CUDA_VISIBLE_DEVICES="$GPUS" \
   -e CUDA_DEVICE_ORDER=PCI_BUS_ID \
   -e CUDA_HOME=/usr/local/cuda \
