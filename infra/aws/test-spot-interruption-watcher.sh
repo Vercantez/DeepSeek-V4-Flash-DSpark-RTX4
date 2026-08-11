@@ -14,6 +14,19 @@ bash -n "$script_dir/publish-s3-runtime-cache.sh"
 bash -n "$script_dir/replicate-s3-runtime-cache.sh"
 bash -n "$script_dir/promote-s3-nvme-launch-template.sh"
 
+grep -q 'env_file="\$repo/.env.rtx4.stock-sm120"' \
+  "$script_dir/worker-user-data-s3-nvme.sh"
+grep -q 'start-deepseek-v4-flash-stock-sm120-rtx4.sh' \
+  "$script_dir/worker-user-data-s3-nvme.sh"
+grep -q 'DSPARK_NUM_TOKENS=0' "$script_dir/worker-user-data-s3-nvme.sh"
+grep -q 'DCP_SIZE=1' "$script_dir/worker-user-data-s3-nvme.sh"
+grep -q 'KV_CACHE_DTYPE=fp8' "$script_dir/worker-user-data-s3-nvme.sh"
+grep -q 'MAX_MODEL_LEN=262144' "$script_dir/worker-user-data-s3-nvme.sh"
+if grep -q 'KV_OFFLOAD_GB=' "$script_dir/worker-user-data-s3-nvme.sh"; then
+  echo 'stock worker user data must not configure custom KV offload' >&2
+  exit 1
+fi
+
 cat >"$tmp/curl" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail

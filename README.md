@@ -1,40 +1,44 @@
 # DeepSeek V4 Flash on 4× RTX PRO 6000 (AWS g7e)
 
-Serve [`deepseek-ai/DeepSeek-V4-Flash-DSpark`](https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash-DSpark) with DSpark speculative decoding on a single **AWS `g7e.24xlarge`** (4× RTX PRO 6000 Blackwell, 96GB each).
+Serve [`deepseek-ai/DeepSeek-V4-Flash-DSpark`](https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash-DSpark) on a single **AWS `g7e.24xlarge`** (4× RTX PRO 6000 Blackwell, 96GB each).
 
 This is the stack behind [camelAI](https://camelai.com)'s free-tier model. It is a port of the community DGX Spark recipes to x86 RTX, plus a small AWS spot deployment (sticky router, S3→NVMe weight staging, ASG workers).
 
-> **Production path = AWS RTX4 + `fp8_ds_mla` KV.**  
-> The DGX Spark / experimental `nvfp4_ds_mla` material further down is lineage and research, not what we run in prod.
+> **Supported RTX path = stock vLLM TP4+EP with FP8 KV.**
+> The DCP, DSpark speculative-decoding, DGX Spark, and custom KV-offload
+> material is retained as lineage and research, not the worker-template
+> default.
 
 ## What you get
 
 | | Production profile |
 |---|---|
-| Instance | `g7e.24xlarge`, TP=4 |
+| Instance | `g7e.24xlarge`, TP=4 + expert parallel |
 | Model | `DeepSeek-V4-Flash-DSpark` |
-| Speculative decoding | DSpark, 5 draft tokens |
-| KV cache | `fp8_ds_mla` |
-| Context | Native checkpoint limit (`1,048,576` tokens); no lower vLLM override |
-| Concurrency | `max_num_seqs=64`, `max_num_batched_tokens=8192` |
-| Scheduling | `priority` |
-| KV offload | 256GB host RAM + local NVMe spill |
+| Runtime | vLLM 0.25.1 + FlashInfer Python 0.6.14 |
+| Speculative decoding | Off |
+| KV cache | FP8, block size 256 |
+| Context | 262,144-token per-request cap |
+| MoE | Marlin MXFP4 |
+| KV offload | Off |
 
 Live worker boot (example):
 
 ```text
-Available KV cache memory: 43.84 GiB
-GPU KV cache size: 2,712,968 tokens
-Maximum concurrency for 262,144 tokens per request: 10.35x
+Available KV cache memory: 43.02 GiB
+GPU KV cache size: 2,917,131 tokens
+Maximum concurrency for 262,144 tokens per request: 11.13x
 ```
 
 Rough throughput from our concurrency sweep (same image family):
 
 | concurrent streams | aggregate tok/s | per-stream tok/s |
 | ---: | ---: | ---: |
-| 1 | ~300 | ~300 |
-| 48 | ~3,300 | ~70 |
-| 64 | ~3,300 | ~50 |
+| 1 | ~111 | ~111 |
+| 16 | ~913 | ~57 |
+| 64 | ~2,072 | ~32 |
+| 256 | ~3,804 | ~15 |
+| 512 | ~4,734 | ~9 |
 
 Details: [`benchmarks/results/`](benchmarks/results/).
 
@@ -43,44 +47,34 @@ Details: [`benchmarks/results/`](benchmarks/results/).
 Needs a g7e.24xlarge (or equivalent 4× RTX PRO 6000), Docker, and enough fast disk for the weights.
 
 ```bash
-# 1. Build the x86 runtime (DGX Spark images are ARM64 and will not run here)
-docker build -f recipe/rtx4/Dockerfile.nvfp4-port \
-  -t vllm-dspark-runtime:rtx4-nvfp4-port-v3 .
+# 1. Build the pinned stock SM120 runtime
+docker pull vllm/vllm-openai:v0.25.1
+docker build -f recipe/rtx4/Dockerfile.stock-sm120 \
+  -t vllm-dspark-runtime:stock-sm120-vllm-0.25.1 .
 
 # 2. Configure
-cp .env.rtx4.example .env.rtx4
+cp .env.rtx4.stock-sm120.example .env.rtx4.stock-sm120
 # edit HF_CACHE / paths / port as needed
 
 # 3. Pull weights onto fast local disk
 ./prepare-dspark-model-cache-rtx4.sh
 
 # 4. Run
-./start-deepseek-v4-flash-dspark-rtx4.sh
+./start-deepseek-v4-flash-stock-sm120-rtx4.sh
 ./status-deepseek-v4-flash-dspark-rtx4.sh
 ./smoke-deepseek-v4-flash-dspark.sh
 ```
 
 OpenAI-compatible API defaults to `http://<host>:8000/v1`.
 
-Important env knobs (see `.env.rtx4.example`):
+Important env knobs (see `.env.rtx4.stock-sm120.example`):
 
 ```bash
-KV_CACHE_DTYPE=fp8_ds_mla
+KV_CACHE_DTYPE=fp8
 DCP_SIZE=1
-# Use a2a when experimenting with DeepSeek-V4 DCP.
-DCP_COMM_BACKEND=
-# Use PIECEWISE for DeepSeek-V4 DCP on SM12.x.
-CUDAGRAPH_MODE=FULL_AND_PIECEWISE
-ENFORCE_EAGER=0
-# Optional lower operational cap. Empty uses the checkpoint's native limit.
-MAX_MODEL_LEN=
-MAX_NUM_SEQS=64
-# Set to 0 to disable DSpark, which is required when DCP_SIZE is greater than 1.
-DSPARK_NUM_TOKENS=5
-FLASHINFER_AUTOTUNE=1
-KV_OFFLOAD_GB=256
-KV_OFFLOAD_DISK_DIR=/opt/dlami/nvme/kv-offload
-SCHEDULING_POLICY=priority
+DSPARK_NUM_TOKENS=0
+MAX_MODEL_LEN=262144
+GPU_MEMORY_UTILIZATION=0.90
 ```
 
 ## AWS spot deployment

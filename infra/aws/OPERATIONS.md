@@ -5,8 +5,9 @@ account IDs, private addresses, API keys, or S3 release names in this file.
 
 ## Topology
 
-- `g7e.24xlarge` workers serve DeepSeek V4 Flash DSpark with four RTX PRO 6000
-  Blackwell GPUs, TP=4, FP8 MLA KV cache, and DSpark speculative decoding.
+- `g7e.24xlarge` workers serve DeepSeek V4 Flash with four RTX PRO 6000
+  Blackwell GPUs as one TP=4 replica with expert parallelism, FP8 KV cache,
+  and Marlin MXFP4 experts. DCP and speculative decoding are disabled.
 - Worker Auto Scaling Groups are maintained in Ohio (`us-east-2`), Oregon
   (`us-west-2`), and Virginia (`us-east-1`). Workers use Spot capacity by
   default. Any temporary on-demand base capacity must be explicitly removed
@@ -27,12 +28,12 @@ The active launch-template user data is `worker-user-data-s3-nvme.sh`.
 3. It sets `HF_CACHE` and `MODEL_DIR` to the staged NVMe model path.
 4. It starts `deepseek-rtx4.service`.
 
-The S3 release includes weights plus an explicitly versioned runtime-cache
-archive containing reusable vLLM, TileLang, TorchInductor, Triton, and
-FlashInfer artifacts. `RUNTIME_CACHE_OBJECT` selects the archive in launch
-template user data. Local NVMe is intentionally disposable after an eviction;
-the regional S3 release is the durable source. The runtime AMI must already
-include Docker, the runtime image, this repository, and the systemd service.
+The S3 release contains the weights. An optional `RUNTIME_CACHE_OBJECT` must
+come from the same pinned stock runtime; caches from the former custom
+DCP/DSpark runtime are incompatible. Local NVMe is intentionally disposable
+after an eviction. The runtime AMI should include Docker, the pinned stock
+image, this repository, and the systemd service; user data can build the image
+as a fallback.
 
 Use `promote-s3-nvme-launch-template.sh` for launch-template updates. It
 embeds the S3/NVMe user data and removes the legacy model-cache EBS mapping.
@@ -64,24 +65,17 @@ OpenAI-compatible.
 
 ## Runtime baseline
 
-The service default is `MAX_NUM_SEQS=64`, `MAX_NUM_BATCHED_TOKENS=8192`, the
-checkpoint-native 1,048,576-token context limit (no `MAX_MODEL_LEN` override),
-and priority scheduling. Keep batch-size changes behind a reproducible
-benchmark. A prior `12288` token prefetch canary regressed from the 8192
-baseline and was not adopted.
+The supported baseline is vLLM 0.25.1, FlashInfer Python 0.6.14 with cubins
+0.6.13, TP=4, expert parallelism, FP8 KV, block size 256, max model length
+262,144, and GPU memory utilization 0.90. The isolated reference host allocated
+2,917,131 KV tokens (11.13 full 256K contexts) and passed exact correctness at
+1, 16, and 64 concurrent streams. The stock sparse-prefill backend can fail
+destructively above 256K for one request, so do not raise the per-request cap
+based only on aggregate KV capacity.
 
-New S3/NVMe worker templates enable tiered KV offload by default: a 256 GiB
-host-memory primary tier plus local-NVMe secondary tier. The isolated
-`g7e.24xlarge` canary initialized DSpark, created both tiers, and passed an
-OpenAI-compatible smoke request. This increases retained cache capacity for
-long-context sessions, but a miss that reaches a lower tier has higher latency;
-keep it out of short-latency benchmarks unless the workload actually spills.
-The launch script bind-mounts `KV_OFFLOAD_DISK_DIR` into the container at the
-same absolute path so filesystem-tier pages are stored on NVMe rather than in
-the container's root-disk writable layer. Existing workers retain their current
-configuration until replacement. The worker unit deletes filesystem-tier pages
-before each vLLM start because they cannot be reattached after the process that
-created their index exits.
+The stock profile does not use custom KV offload. Capacity comes from V4's
+compressed sparse-attention cache; adding the former offload flags makes the
+launcher fail closed.
 
 ## Recovery and verification
 

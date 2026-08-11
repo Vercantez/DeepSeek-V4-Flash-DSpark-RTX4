@@ -1,19 +1,20 @@
 # AWS RTX4 Spot Service
 
-This directory contains the prototype deployment shape for serving
-`DeepSeek-V4-Flash-0731` on `g7e.24xlarge` RTX PRO 6000 Blackwell hosts.
+This directory contains the deployment shape for serving DeepSeek V4 Flash on
+`g7e.24xlarge` RTX PRO 6000 Blackwell hosts.
 
 ## Shape
 
 - GPU workers run in an Auto Scaling Group with Spot capacity.
 - An IMDSv2 watcher drains workers on interruption or rebalance notices by
   rejecting new connections while preserving established streams.
-- Each GPU worker starts `deepseek-rtx4.service`, which runs the tested
-  `vllm-dspark-runtime:rtx4-nvfp4-port-v3` container with:
-  - `KV_CACHE_DTYPE=fp8_ds_mla`
-  - DSpark speculative decoding enabled
-  - `MAX_NUM_SEQS=64`
-  - `MAX_NUM_BATCHED_TOKENS=8192`
+- Each GPU worker starts `deepseek-rtx4.service`, which runs the validated
+  stock-SM120 profile with vLLM 0.25.1 and FlashInfer Python 0.6.14:
+  - one TP=4 replica with expert parallelism enabled
+  - FP8 KV cache with 256-token blocks
+  - Marlin MXFP4 MoE kernels
+  - `MAX_MODEL_LEN=262144`
+  - DCP disabled and speculative decoding disabled
 - A small on-demand router node runs `deepseek-sticky-router.service`.
 - The router discovers healthy ASG workers through AWS APIs and forwards
   vLLM's native OpenAI and Anthropic traffic to
@@ -83,9 +84,9 @@ The router maps the shared default/output guardrails to each native schema:
 endpoint and its final chat-generation validation can account for templates
 differently. Instead, the deployed model contract is explicit:
 
-- hard context limit: the checkpoint-native `1048576` tokens
-- application working context: `1048576` tokens
-- maximum output: `1048576` tokens for an empty prompt
+- hard context limit: `262144` tokens
+- application working context: `262144` tokens
+- maximum output: `262144` tokens for an empty prompt
 
 The application may compact before the model's native limit. By default, the
 router preserves the caller's `max_tokens`; vLLM enforces the native context
@@ -105,18 +106,18 @@ is larger than `MAX_ADMITTED_REQUEST_BYTES` (default `131072`) or when
 `MAX_INFLIGHT_REQUESTS` (default `8`) requests are already active. These are
 fast `503` responses intended to activate the AI Gateway fallback without
 polluting vLLM's queue or KV spill tier. They are routing controls, not context
-limits: the RTX model retains its native context window, and setting the byte
+limits: the RTX model retains its configured 256K context window, and setting the byte
 limit to `0` disables only the size-based admission check.
 
 ## Worker Startup
 
 The active startup path uses a versioned, regional S3 artifact rather than a
 model EBS snapshot. The artifact contains the dereferenced model snapshot and
-an optional, explicitly versioned runtime-cache archive. Worker user data
-downloads both to `/opt/dlami/nvme/deepseek-model`, validates their SHA-256
+may contain an explicitly versioned runtime-cache archive. Worker user data
+downloads it to `/opt/dlami/nvme/deepseek-model`, validates its SHA-256
 checksums, then points `HF_CACHE` at that local NVMe path before starting vLLM.
-The runtime archive contains vLLM, TileLang, TorchInductor, Triton, and
-FlashInfer artifacts produced by a fully warmed SM120 worker.
+Only restore a runtime cache produced by the same pinned stock image; caches
+from the former custom DCP/DSpark runtime are incompatible.
 
 The local NVMe cache is intentionally ephemeral: it is discarded on Spot
 termination and rebuilt from S3. Bake the Docker image, repository, and
@@ -145,7 +146,6 @@ volume mapping, and promotes the new version:
 REGION=us-east-2 \
 LAUNCH_TEMPLATE_ID=lt-... \
 MODEL_ARTIFACT_URI=s3://deepseek-rtx4-artifacts-<account>-us-east-2/deepseek-v4-flash-dspark/<release> \
-RUNTIME_CACHE_OBJECT=runtime-cache/0731-sm120-v1.tar.zst \
 ./promote-s3-nvme-launch-template.sh
 ```
 
@@ -172,8 +172,8 @@ ARTIFACT_URI=s3://deepseek-rtx4-artifacts-<account>-us-east-2/deepseek-v4-flash-
 ```
 
 `artifact.json` is uploaded last, so an interrupted upload is never treated as
-a valid worker release. Flash-0731 includes its DSpark drafter in the target
-checkpoint; the RTX launcher uses the official 7-token greedy DSpark mode.
+a valid worker release. Flash-0731 includes a DSpark drafter, but the stock RTX
+launcher does not enable it.
 
 After staging the source release, copy it to each worker region:
 

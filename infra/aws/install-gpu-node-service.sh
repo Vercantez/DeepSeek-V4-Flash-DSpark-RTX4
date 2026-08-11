@@ -17,23 +17,24 @@ sudo -u ubuntu git -C "$REPO_DIR" pull --ff-only
 sudo mkdir -p "$HF_CACHE"
 sudo chown -R ubuntu:ubuntu "$(dirname "$HF_CACHE")"
 
-sudo -u ubuntu cp "$REPO_DIR/.env.rtx4.example" "$REPO_DIR/.env.rtx4"
-sudo -u ubuntu sed -i "s#^HF_CACHE=.*#HF_CACHE=$HF_CACHE#" "$REPO_DIR/.env.rtx4"
+ENV_FILE="$REPO_DIR/.env.rtx4.stock-sm120"
+sudo -u ubuntu cp "$REPO_DIR/.env.rtx4.stock-sm120.example" "$ENV_FILE"
+sudo -u ubuntu sed -i "s#^HF_CACHE=.*#HF_CACHE=$HF_CACHE#" "$ENV_FILE"
 if [ -d "$HF_CACHE/hub/models--deepseek-ai--DeepSeek-V4-Flash-0731/snapshots" ]; then
   snapshot="$(find "$HF_CACHE/hub/models--deepseek-ai--DeepSeek-V4-Flash-0731/snapshots" -mindepth 1 -maxdepth 1 -type d | sort | tail -1)"
   if [ -n "$snapshot" ]; then
     container_snapshot="/cache/huggingface${snapshot#"$HF_CACHE"}"
-    if grep -q '^MODEL_DIR=' "$REPO_DIR/.env.rtx4"; then
-      sudo -u ubuntu sed -i "s#^MODEL_DIR=.*#MODEL_DIR=$container_snapshot#" "$REPO_DIR/.env.rtx4"
+    if grep -q '^MODEL_DIR=' "$ENV_FILE"; then
+      sudo -u ubuntu sed -i "s#^MODEL_DIR=.*#MODEL_DIR=$container_snapshot#" "$ENV_FILE"
     else
-      echo "MODEL_DIR=$container_snapshot" | sudo -u ubuntu tee -a "$REPO_DIR/.env.rtx4" >/dev/null
+      echo "MODEL_DIR=$container_snapshot" | sudo -u ubuntu tee -a "$ENV_FILE" >/dev/null
     fi
   fi
 fi
 
 sudo tee /etc/systemd/system/deepseek-rtx4.service >/dev/null <<EOF
 [Unit]
-Description=DeepSeek V4 Flash DSpark RTX4 vLLM service
+Description=DeepSeek V4 Flash stock SM120 TP4+EP vLLM service
 After=docker.service network-online.target deepseek-spot-interruption-watcher.service
 Wants=network-online.target deepseek-spot-interruption-watcher.service
 Requires=docker.service
@@ -43,10 +44,9 @@ RequiresMountsFor=$HF_CACHE
 Type=oneshot
 User=ubuntu
 WorkingDirectory=$REPO_DIR
-Environment=ENV_FILE=$REPO_DIR/.env.rtx4
-ExecStartPre=+/bin/sh -c 'rm -f /dev/shm/vllm_offload_*.mmap'
-ExecStart=$REPO_DIR/start-deepseek-v4-flash-dspark-rtx4.sh
-ExecStop=-/usr/bin/docker rm -f deepseek-v4-flash-dspark-rtx4
+Environment=ENV_FILE=$ENV_FILE
+ExecStart=$REPO_DIR/start-deepseek-v4-flash-stock-sm120-rtx4.sh
+ExecStop=-/usr/bin/docker rm -f deepseek-v4-flash-stock-sm120-rtx4
 RemainAfterExit=yes
 TimeoutStartSec=1800
 

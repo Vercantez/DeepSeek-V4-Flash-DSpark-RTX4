@@ -87,7 +87,7 @@ fi
 test -n "$model_dir_rel" && test -f "$HF_CACHE/$model_dir_rel/config.json"
 
 repo=/opt/deepseek/mia-dspark-rtx4
-env_file="$repo/.env.rtx4"
+env_file="$repo/.env.rtx4.stock-sm120"
 : "${REPO_URL:=https://github.com/Vercantez/DeepSeek-V4-Flash-DSpark-RTX4}"
 sudo -u ubuntu git -C "$repo" remote set-url origin "$REPO_URL"
 sudo -u ubuntu git -C "$repo" fetch origin --prune
@@ -99,34 +99,36 @@ sudo -u ubuntu git -C "$repo" pull --ff-only origin main
 # established streams to use the remaining notice window.
 "$repo/infra/aws/install-spot-interruption-watcher.sh"
 
-sed -i '/^HF_CACHE=/d; /^MODEL_DIR=/d; /^KV_CACHE_DTYPE=/d; /^KV_OFFLOAD_GB=/d; /^KV_OFFLOAD_DISK_DIR=/d; /^DSPARK_MODEL=/d; /^DSPARK_DRAFT_MODEL=/d; /^MTP_NUM_TOKENS=/d; /^DSPARK_NUM_TOKENS=/d; /^DSPARK_SAMPLE=/d; /^MAX_MODEL_LEN=/d' "$env_file"
+install -o ubuntu -g ubuntu -m 600 \
+  "$repo/.env.rtx4.stock-sm120.example" "$env_file"
+sed -i '/^HF_CACHE=/d; /^MODEL_DIR=/d; /^DSPARK_VLLM_IMAGE=/d; /^KV_CACHE_DTYPE=/d; /^DCP_SIZE=/d; /^DSPARK_NUM_TOKENS=/d; /^MAX_MODEL_LEN=/d' "$env_file"
 printf '%s\n' \
   "HF_CACHE=$HF_CACHE" \
   "MODEL_DIR=/cache/huggingface/$model_dir_rel" \
-  "KV_CACHE_DTYPE=fp8_ds_mla" \
-  "DSPARK_NUM_TOKENS=5" \
-  "DSPARK_SAMPLE=greedy" >>"$env_file"
+  "DSPARK_VLLM_IMAGE=vllm-dspark-runtime:stock-sm120-vllm-0.25.1" \
+  "KV_CACHE_DTYPE=fp8" \
+  "DCP_SIZE=1" \
+  "DSPARK_NUM_TOKENS=0" \
+  "MAX_MODEL_LEN=262144" >>"$env_file"
 
-# Give new RTX4 workers a durable overflow tier for long-context sessions. The
-# primary offload tier is host memory; local NVMe is used after it fills.
-: "${KV_OFFLOAD_GB:=256}"
-: "${KV_OFFLOAD_DISK_DIR:=/opt/dlami/nvme/kv-offload}"
-if [ "$KV_OFFLOAD_GB" -gt 0 ]; then
-  printf '%s\n' \
-    "KV_OFFLOAD_GB=$KV_OFFLOAD_GB" \
-    "KV_OFFLOAD_DISK_DIR=$KV_OFFLOAD_DISK_DIR" >>"$env_file"
-  install -d -o ubuntu -g ubuntu "$KV_OFFLOAD_DISK_DIR"
+# The stock image should be baked into the worker AMI. Keep this deterministic
+# fallback so an older regional AMI can still bootstrap after its launch
+# template is promoted.
+if ! docker image inspect vllm-dspark-runtime:stock-sm120-vllm-0.25.1 >/dev/null 2>&1; then
+  docker build --pull=false \
+    -f "$repo/recipe/rtx4/Dockerfile.stock-sm120" \
+    -t vllm-dspark-runtime:stock-sm120-vllm-0.25.1 "$repo"
 fi
 
 install -d /etc/systemd/system/deepseek-rtx4.service.d
-cat >/etc/systemd/system/deepseek-rtx4.service.d/cleanup-offload.conf <<'EOF'
+rm -f /etc/systemd/system/deepseek-rtx4.service.d/cleanup-offload.conf
+cat >/etc/systemd/system/deepseek-rtx4.service.d/stock-sm120.conf <<EOF
 [Service]
-# Offload pages are process-local cache state. After a restart their index is
-# gone, so retaining the files only consumes NVMe and can eventually prevent a
-# replacement process from spilling fresh pages.
-ExecStartPre=+/bin/sh -c 'rm -f /dev/shm/vllm_offload_*.mmap'
-ExecStartPre=+/usr/bin/find /opt/dlami/nvme/kv-offload -mindepth 1 -delete
-ExecStop=-/usr/bin/docker rm -f deepseek-v4-flash-dspark-rtx4
+Environment=ENV_FILE=$env_file
+ExecStart=
+ExecStart=$repo/start-deepseek-v4-flash-stock-sm120-rtx4.sh
+ExecStop=
+ExecStop=-/usr/bin/docker rm -f deepseek-v4-flash-stock-sm120-rtx4
 EOF
 
 systemctl daemon-reload

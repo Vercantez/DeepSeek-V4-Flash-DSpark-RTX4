@@ -32,7 +32,7 @@ version=$(aws ec2 create-launch-template-version \
   --region "$REGION" \
   --launch-template-id "$LAUNCH_TEMPLATE_ID" \
   --source-version '$Default' \
-  --version-description 'stage-model-and-runtime-cache-from-s3-to-local-nvme' \
+  --version-description 'stock-sm120-tp4-ep-stage-model-from-s3-to-local-nvme' \
   --launch-template-data "file://$template_data_file" \
   --query 'LaunchTemplateVersion.VersionNumber' \
   --output text)
