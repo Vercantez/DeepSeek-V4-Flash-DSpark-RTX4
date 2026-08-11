@@ -1,0 +1,519 @@
+{
+  "finished_at": "2026-08-11T17:43:42.146487+00:00",
+  "levels": [
+    {
+      "concurrency": 2,
+      "correctness": [],
+      "summary": {
+        "aggregate_output_tps_after_first": {
+          "count": 1,
+          "max": 4.567,
+          "min": 4.567,
+          "p50": 4.567,
+          "p95": 4.567
+        },
+        "aggregate_output_tps_end_to_end": {
+          "count": 1,
+          "max": 2.709,
+          "min": 2.709,
+          "p50": 2.709,
+          "p95": 2.709
+        },
+        "aggregate_prompt_tps_to_first": {
+          "count": 1,
+          "max": 6274.493,
+          "min": 6274.493,
+          "p50": 6274.493,
+          "p95": 6274.493
+        },
+        "all_requests_succeeded": true,
+        "effective_itl_p50_ms": {
+          "count": 1,
+          "max": 222.5335,
+          "min": 222.5335,
+          "p50": 222.5335,
+          "p95": 222.5335
+        },
+        "server_generation_tps_end_to_end": {
+          "count": 1,
+          "max": 2.709,
+          "min": 2.709,
+          "p50": 2.709,
+          "p95": 2.709
+        },
+        "ttft_p50_s": {
+          "count": 1,
+          "max": 33.1356,
+          "min": 33.1356,
+          "p50": 33.1356,
+          "p95": 33.1356
+        }
+      },
+      "trials": [
+        {
+          "aggregate_output_tps_after_first": 4.567,
+          "aggregate_output_tps_end_to_end": 2.709,
+          "aggregate_prompt_tps_to_first": 6274.493,
+          "cache_config_info": [
+            {
+              "labels": {
+                "_block_size_resolved": "True",
+                "block_size": "4",
+                "cache_dtype": "fp8",
+                "calculate_kv_scales": "False",
+                "enable_prefix_caching": "True",
+                "engine": "0",
+                "gpu_memory_utilization": "0.9",
+                "hash_block_size": "None",
+                "is_attention_free": "False",
+                "kv_cache_dtype_skip_layers": "[]",
+                "kv_cache_max_concurrency": "5.094473744554001",
+                "kv_cache_memory_bytes": "None",
+                "kv_cache_size_tokens": "1335485",
+                "kv_offloading_backend": "native",
+                "kv_offloading_size": "256.0",
+                "kv_sharing_fast_prefill": "False",
+                "mamba_block_size": "None",
+                "mamba_cache_dtype": "auto",
+                "mamba_cache_mode": "none",
+                "mamba_page_size_padded": "None",
+                "mamba_ssm_cache_dtype": "auto",
+                "num_cpu_blocks": "None",
+                "num_gpu_blocks": "44434",
+                "num_gpu_blocks_override": "None",
+                "prefix_caching_hash_algo": "sha256",
+                "skip_page_size_padded": "None",
+                "sliding_window": "128",
+                "user_specified_block_size": "True",
+                "user_specified_mamba_block_size": "False"
+              },
+              "value": 1.0
+            }
+          ],
+          "concurrency": 2,
+          "decode_tokens_after_first": 126,
+          "effective_itl_ms": {
+            "count": 2,
+            "max": 434.6907,
+            "min": 10.3763,
+            "p50": 222.5335,
+            "p95": 434.6907
+          },
+          "global_decode_window_s": 27.590284,
+          "global_prefill_to_first_window_s": 46.603922,
+          "output_tokens": 128,
+          "per_stream_output_tps_after_first": {
+            "count": 2,
+            "max": 96.374,
+            "min": 2.3,
+            "p50": 49.337,
+            "p95": 96.374
+          },
+          "per_stream_prompt_tps_to_first": {
+            "count": 2,
+            "max": 7434.135,
+            "min": 3137.225,
+            "p50": 5285.68,
+            "p95": 7434.135
+          },
+          "prompt_tokens": {
+            "count": 2,
+            "max": 146209.0,
+            "min": 146207.0,
+            "p50": 146208.0,
+            "p95": 146209.0
+          },
+          "requests": [
+            {
+              "content_events": 60,
+              "decode_tokens": 63,
+              "decode_window_s": 0.653706,
+              "effective_itl_ms": 10.3763,
+              "end_to_end_s": 47.257677,
+              "error": null,
+              "finish_reason": "length",
+              "http_status": 200,
+              "index": 0,
+              "ok": true,
+              "output_tokens": 64,
+              "output_tps_after_first": 96.374,
+              "prompt_tokens": 146207,
+              "prompt_tps_to_first": 3137.225,
+              "sse_event_gap_ms": {
+                "count": 59,
+                "max": 52.756,
+                "min": 0.506,
+                "p50": 10.278,
+                "p95": 16.433
+              },
+              "started_s": 4.5e-05,
+              "text": "# Bounded Concurrent Job Queue: Comprehensive Implementation Guide\n\n## 1. Architectural Overview\n\nA bounded concurrent job queue is a critical infrastructure component that decouples job production from job consumption while enforcing resource limits. This guide provides a production-grade implementation covering all operational concerns.\n\n### 1.1 Core Design Principles\n\n-",
+              "ttft_s": 46.603922,
+              "usage_source": "usage.completion_tokens"
+            },
+            {
+              "content_events": 60,
+              "decode_tokens": 63,
+              "decode_window_s": 27.385513,
+              "effective_itl_ms": 434.6907,
+              "end_to_end_s": 47.052832,
+              "error": null,
+              "finish_reason": "length",
+              "http_status": 200,
+              "index": 1,
+              "ok": true,
+              "output_tokens": 64,
+              "output_tps_after_first": 2.3,
+              "prompt_tokens": 146209,
+              "prompt_tps_to_first": 7434.135,
+              "sse_event_gap_ms": {
+                "count": 59,
+                "max": 9415.696,
+                "min": 0.456,
+                "p50": 10.349,
+                "p95": 1135.452
+              },
+              "started_s": 0.000137,
+              "text": "# Bounded Concurrent Job Queue: A Comprehensive Implementation Guide\n\n## 1. Architectural Overview\n\nA bounded concurrent job queue is a critical infrastructure component that decouples job production from job consumption while enforcing resource limits. This guide presents a production-grade implementation covering all operational concerns.\n\n### 1.1 Core Design Principles\n\n",
+              "ttft_s": 19.667252,
+              "usage_source": "usage.completion_tokens"
+            }
+          ],
+          "server_generation_tps_end_to_end": 2.709,
+          "server_metric_delta": {
+            "vllm:generation_tokens_total": 128.0,
+            "vllm:prompt_tokens_total": 292416.0,
+            "vllm:request_success_total": 2.0
+          },
+          "spec_decode_acceptance": null,
+          "sse_event_gap_ms": {
+            "count": 118,
+            "max": 9415.696,
+            "min": 0.456,
+            "p50": 10.313,
+            "p95": 1082.365
+          },
+          "success": "2/2",
+          "telemetry": {
+            "errors": [],
+            "gpu": {
+              "0": {
+                "gpu_util_pct": {
+                  "count": 164,
+                  "max": 100.0,
+                  "min": 0.0,
+                  "p50": 100.0,
+                  "p95": 100.0
+                },
+                "memory_total_mib": {
+                  "count": 164,
+                  "max": 97887.0,
+                  "min": 97887.0,
+                  "p50": 97887.0,
+                  "p95": 97887.0
+                },
+                "memory_used_mib": {
+                  "count": 164,
+                  "max": 93617.0,
+                  "min": 91227.0,
+                  "p50": 93099.0,
+                  "p95": 93617.0
+                },
+                "memory_util_pct": {
+                  "count": 164,
+                  "max": 41.0,
+                  "min": 0.0,
+                  "p50": 26.0,
+                  "p95": 28.0
+                },
+                "power_w": {
+                  "count": 164,
+                  "max": 326.72,
+                  "min": 85.42,
+                  "p50": 290.06,
+                  "p95": 317.83
+                },
+                "sm_clock_mhz": {
+                  "count": 164,
+                  "max": 2422.0,
+                  "min": 2287.0,
+                  "p50": 2407.0,
+                  "p95": 2415.0
+                },
+                "temperature_c": {
+                  "count": 164,
+                  "max": 54.0,
+                  "min": 35.0,
+                  "p50": 46.0,
+                  "p95": 51.0
+                }
+              },
+              "1": {
+                "gpu_util_pct": {
+                  "count": 164,
+                  "max": 100.0,
+                  "min": 0.0,
+                  "p50": 100.0,
+                  "p95": 100.0
+                },
+                "memory_total_mib": {
+                  "count": 164,
+                  "max": 97887.0,
+                  "min": 97887.0,
+                  "p50": 97887.0,
+                  "p95": 97887.0
+                },
+                "memory_used_mib": {
+                  "count": 164,
+                  "max": 93617.0,
+                  "min": 91227.0,
+                  "p50": 93099.0,
+                  "p95": 93617.0
+                },
+                "memory_util_pct": {
+                  "count": 164,
+                  "max": 37.0,
+                  "min": 0.0,
+                  "p50": 25.0,
+                  "p95": 27.0
+                },
+                "power_w": {
+                  "count": 164,
+                  "max": 334.54,
+                  "min": 85.96,
+                  "p50": 292.65,
+                  "p95": 323.11
+                },
+                "sm_clock_mhz": {
+                  "count": 164,
+                  "max": 2422.0,
+                  "min": 2272.0,
+                  "p50": 2407.0,
+                  "p95": 2415.0
+                },
+                "temperature_c": {
+                  "count": 164,
+                  "max": 53.0,
+                  "min": 35.0,
+                  "p50": 46.0,
+                  "p95": 51.0
+                }
+              },
+              "2": {
+                "gpu_util_pct": {
+                  "count": 164,
+                  "max": 100.0,
+                  "min": 0.0,
+                  "p50": 100.0,
+                  "p95": 100.0
+                },
+                "memory_total_mib": {
+                  "count": 164,
+                  "max": 97887.0,
+                  "min": 97887.0,
+                  "p50": 97887.0,
+                  "p95": 97887.0
+                },
+                "memory_used_mib": {
+                  "count": 164,
+                  "max": 93617.0,
+                  "min": 91227.0,
+                  "p50": 93099.0,
+                  "p95": 93617.0
+                },
+                "memory_util_pct": {
+                  "count": 164,
+                  "max": 44.0,
+                  "min": 0.0,
+                  "p50": 27.0,
+                  "p95": 29.0
+                },
+                "power_w": {
+                  "count": 164,
+                  "max": 321.16,
+                  "min": 87.31,
+                  "p50": 282.16,
+                  "p95": 310.66
+                },
+                "sm_clock_mhz": {
+                  "count": 164,
+                  "max": 2422.0,
+                  "min": 2317.0,
+                  "p50": 2415.0,
+                  "p95": 2415.0
+                },
+                "temperature_c": {
+                  "count": 164,
+                  "max": 52.0,
+                  "min": 35.0,
+                  "p50": 46.0,
+                  "p95": 51.0
+                }
+              },
+              "3": {
+                "gpu_util_pct": {
+                  "count": 164,
+                  "max": 100.0,
+                  "min": 0.0,
+                  "p50": 100.0,
+                  "p95": 100.0
+                },
+                "memory_total_mib": {
+                  "count": 164,
+                  "max": 97887.0,
+                  "min": 97887.0,
+                  "p50": 97887.0,
+                  "p95": 97887.0
+                },
+                "memory_used_mib": {
+                  "count": 164,
+                  "max": 93617.0,
+                  "min": 91227.0,
+                  "p50": 93099.0,
+                  "p95": 93617.0
+                },
+                "memory_util_pct": {
+                  "count": 164,
+                  "max": 30.0,
+                  "min": 0.0,
+                  "p50": 21.0,
+                  "p95": 23.0
+                },
+                "power_w": {
+                  "count": 164,
+                  "max": 332.92,
+                  "min": 87.84,
+                  "p50": 291.71,
+                  "p95": 316.94
+                },
+                "sm_clock_mhz": {
+                  "count": 164,
+                  "max": 2422.0,
+                  "min": 2317.0,
+                  "p50": 2415.0,
+                  "p95": 2415.0
+                },
+                "temperature_c": {
+                  "count": 164,
+                  "max": 54.0,
+                  "min": 35.0,
+                  "p50": 46.0,
+                  "p95": 51.0
+                }
+              }
+            },
+            "metric_gauges": {
+              "vllm:kv_cache_usage_perc": {
+                "count": 164,
+                "max": 0.1013,
+                "min": 0.0,
+                "p50": 0.0844,
+                "p95": 0.0998
+              },
+              "vllm:num_requests_running": {
+                "count": 164,
+                "max": 2.0,
+                "min": 0.0,
+                "p50": 2.0,
+                "p95": 2.0
+              },
+              "vllm:num_requests_waiting": {
+                "count": 164,
+                "max": 2.0,
+                "min": 0.0,
+                "p50": 0.0,
+                "p95": 1.0
+              }
+            }
+          },
+          "trial": 0,
+          "ttft_s": {
+            "count": 2,
+            "max": 46.6039,
+            "min": 19.6673,
+            "p50": 33.1356,
+            "p95": 46.6039
+          },
+          "wall_s": 47.257898
+        }
+      ]
+    }
+  ],
+  "metric_info": {
+    "vllm:cache_config_info": [
+      {
+        "labels": {
+          "_block_size_resolved": "True",
+          "block_size": "4",
+          "cache_dtype": "fp8",
+          "calculate_kv_scales": "False",
+          "enable_prefix_caching": "True",
+          "engine": "0",
+          "gpu_memory_utilization": "0.9",
+          "hash_block_size": "None",
+          "is_attention_free": "False",
+          "kv_cache_dtype_skip_layers": "[]",
+          "kv_cache_max_concurrency": "5.094473744554001",
+          "kv_cache_memory_bytes": "None",
+          "kv_cache_size_tokens": "1335485",
+          "kv_offloading_backend": "native",
+          "kv_offloading_size": "256.0",
+          "kv_sharing_fast_prefill": "False",
+          "mamba_block_size": "None",
+          "mamba_cache_dtype": "auto",
+          "mamba_cache_mode": "none",
+          "mamba_page_size_padded": "None",
+          "mamba_ssm_cache_dtype": "auto",
+          "num_cpu_blocks": "None",
+          "num_gpu_blocks": "44434",
+          "num_gpu_blocks_override": "None",
+          "prefix_caching_hash_algo": "sha256",
+          "skip_page_size_padded": "None",
+          "sliding_window": "128",
+          "user_specified_block_size": "True",
+          "user_specified_mamba_block_size": "False"
+        },
+        "value": 1.0
+      }
+    ]
+  },
+  "ok": true,
+  "profile": {
+    "async_scheduling": "on",
+    "backend": "flashinfer-mla-sparse-dsv4-marlin",
+    "base_url": "http://127.0.0.1:8000/v1",
+    "cudagraph_mode": "FULL_AND_PIECEWISE",
+    "dcp": 1,
+    "dcp_interleave": -1,
+    "dspark_tokens": 0,
+    "expert_parallel": "on",
+    "gpu_memory_utilization": 0.9,
+    "image_tag": "vllm-dspark-runtime:stock-sm120-vllm-0.25.1-marlin-c-tmp-v1",
+    "kv_dtype": "fp8",
+    "label": "stock-sm120-marlin-long-context",
+    "max_num_batched_tokens": 8192,
+    "max_num_seqs": 512,
+    "model": "deepseek-v4-flash-dspark",
+    "runtime_commit": "78cb4ad629562f99c586aee3e899f92b1c330c72",
+    "tensor_parallel_size": 4
+  },
+  "schema_version": 1,
+  "settings": {
+    "concurrency": [
+      2
+    ],
+    "correctness_waves": 0,
+    "early_stop_allowed": false,
+    "measurement_mode": "decode",
+    "output_tokens": 64,
+    "prompt_file": null,
+    "prompt_sha256": null,
+    "prompt_words": 95000,
+    "sample_interval": 0.2,
+    "trials": 1,
+    "usage_required": true,
+    "warmup_tokens": 64,
+    "warmups": 0
+  },
+  "started_at": "2026-08-11T17:42:54.786804+00:00"
+}

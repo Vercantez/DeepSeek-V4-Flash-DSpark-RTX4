@@ -1,0 +1,2867 @@
+{
+  "finished_at": "2026-08-11T17:41:52.614975+00:00",
+  "levels": [
+    {
+      "concurrency": 1,
+      "correctness": [
+        {
+          "checks": [
+            {
+              "actual": "alpha cache canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "alpha cache canary passed",
+              "index": 0,
+              "ok": true
+            }
+          ],
+          "concurrency": 1,
+          "exact": "1/1",
+          "ok": true,
+          "wave": 0
+        },
+        {
+          "checks": [
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 0,
+              "ok": true
+            }
+          ],
+          "concurrency": 1,
+          "exact": "1/1",
+          "ok": true,
+          "wave": 1
+        },
+        {
+          "checks": [
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 0,
+              "ok": true
+            }
+          ],
+          "concurrency": 1,
+          "exact": "1/1",
+          "ok": true,
+          "wave": 2
+        },
+        {
+          "checks": [
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 0,
+              "ok": true
+            }
+          ],
+          "concurrency": 1,
+          "exact": "1/1",
+          "ok": true,
+          "wave": 3
+        },
+        {
+          "checks": [
+            {
+              "actual": "391",
+              "error": null,
+              "exact": true,
+              "expected": "391",
+              "index": 0,
+              "ok": true
+            }
+          ],
+          "concurrency": 1,
+          "exact": "1/1",
+          "ok": true,
+          "wave": 4
+        },
+        {
+          "checks": [
+            {
+              "actual": "nebula-quartz-8815",
+              "error": null,
+              "exact": true,
+              "expected": "nebula-quartz-8815",
+              "index": 0,
+              "ok": true
+            }
+          ],
+          "concurrency": 1,
+          "exact": "1/1",
+          "ok": true,
+          "wave": 5
+        },
+        {
+          "checks": [
+            {
+              "actual": "alpha cache canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "alpha cache canary passed",
+              "index": 0,
+              "ok": true
+            }
+          ],
+          "concurrency": 1,
+          "exact": "1/1",
+          "ok": true,
+          "wave": 6
+        },
+        {
+          "checks": [
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 0,
+              "ok": true
+            }
+          ],
+          "concurrency": 1,
+          "exact": "1/1",
+          "ok": true,
+          "wave": 7
+        },
+        {
+          "checks": [
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 0,
+              "ok": true
+            }
+          ],
+          "concurrency": 1,
+          "exact": "1/1",
+          "ok": true,
+          "wave": 8
+        },
+        {
+          "checks": [
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 0,
+              "ok": true
+            }
+          ],
+          "concurrency": 1,
+          "exact": "1/1",
+          "ok": true,
+          "wave": 9
+        }
+      ],
+      "summary": {
+        "aggregate_output_tps_after_first": {
+          "count": 1,
+          "max": 110.847,
+          "min": 110.847,
+          "p50": 110.847,
+          "p95": 110.847
+        },
+        "aggregate_output_tps_end_to_end": {
+          "count": 1,
+          "max": 109.654,
+          "min": 109.654,
+          "p50": 109.654,
+          "p95": 109.654
+        },
+        "aggregate_prompt_tps_to_first": {
+          "count": 1,
+          "max": 4230.883,
+          "min": 4230.883,
+          "p50": 4230.883,
+          "p95": 4230.883
+        },
+        "all_requests_succeeded": true,
+        "effective_itl_p50_ms": {
+          "count": 1,
+          "max": 9.0215,
+          "min": 9.0215,
+          "p50": 9.0215,
+          "p95": 9.0215
+        },
+        "server_generation_tps_end_to_end": {
+          "count": 1,
+          "max": 109.654,
+          "min": 109.654,
+          "p50": 109.654,
+          "p95": 109.654
+        },
+        "ttft_p50_s": {
+          "count": 1,
+          "max": 0.0591,
+          "min": 0.0591,
+          "p50": 0.0591,
+          "p95": 0.0591
+        }
+      },
+      "trials": [
+        {
+          "aggregate_output_tps_after_first": 110.847,
+          "aggregate_output_tps_end_to_end": 109.654,
+          "aggregate_prompt_tps_to_first": 4230.883,
+          "cache_config_info": [
+            {
+              "labels": {
+                "_block_size_resolved": "True",
+                "block_size": "4",
+                "cache_dtype": "fp8",
+                "calculate_kv_scales": "False",
+                "enable_prefix_caching": "True",
+                "engine": "0",
+                "gpu_memory_utilization": "0.9",
+                "hash_block_size": "None",
+                "is_attention_free": "False",
+                "kv_cache_dtype_skip_layers": "[]",
+                "kv_cache_max_concurrency": "5.094473744554001",
+                "kv_cache_memory_bytes": "None",
+                "kv_cache_size_tokens": "1335485",
+                "kv_offloading_backend": "native",
+                "kv_offloading_size": "256.0",
+                "kv_sharing_fast_prefill": "False",
+                "mamba_block_size": "None",
+                "mamba_cache_dtype": "auto",
+                "mamba_cache_mode": "none",
+                "mamba_page_size_padded": "None",
+                "mamba_ssm_cache_dtype": "auto",
+                "num_cpu_blocks": "None",
+                "num_gpu_blocks": "44434",
+                "num_gpu_blocks_override": "None",
+                "prefix_caching_hash_algo": "sha256",
+                "skip_page_size_padded": "None",
+                "sliding_window": "128",
+                "user_specified_block_size": "True",
+                "user_specified_mamba_block_size": "False"
+              },
+              "value": 1.0
+            }
+          ],
+          "concurrency": 1,
+          "decode_tokens_after_first": 511,
+          "effective_itl_ms": {
+            "count": 1,
+            "max": 9.0215,
+            "min": 9.0215,
+            "p50": 9.0215,
+            "p95": 9.0215
+          },
+          "global_decode_window_s": 4.609977,
+          "global_prefill_to_first_window_s": 0.059089,
+          "output_tokens": 512,
+          "per_stream_output_tps_after_first": {
+            "count": 1,
+            "max": 110.847,
+            "min": 110.847,
+            "p50": 110.847,
+            "p95": 110.847
+          },
+          "per_stream_prompt_tps_to_first": {
+            "count": 1,
+            "max": 4230.883,
+            "min": 4230.883,
+            "p50": 4230.883,
+            "p95": 4230.883
+          },
+          "prompt_tokens": {
+            "count": 1,
+            "max": 250.0,
+            "min": 250.0,
+            "p50": 250.0,
+            "p95": 250.0
+          },
+          "requests": [
+            {
+              "content_events": 512,
+              "decode_tokens": 511,
+              "decode_window_s": 4.609977,
+              "effective_itl_ms": 9.0215,
+              "end_to_end_s": 4.669119,
+              "error": null,
+              "finish_reason": "length",
+              "http_status": 200,
+              "index": 0,
+              "ok": true,
+              "output_tokens": 512,
+              "output_tps_after_first": 110.847,
+              "prompt_tokens": 250,
+              "prompt_tps_to_first": 4230.883,
+              "sse_event_gap_ms": {
+                "count": 511,
+                "max": 15.599,
+                "min": 2.522,
+                "p50": 9.019,
+                "p95": 9.106
+              },
+              "started_s": 3.1e-05,
+              "text": "# Bounded Concurrent Job Queue: A Comprehensive Implementation Guide\n\n## 1. Architectural Overview\n\nThe bounded concurrent job queue is a producer-consumer system with a fixed-capacity buffer, designed to decouple job submission from execution while enforcing resource limits. The core components are:\n\n- **Producer API**: Accepts jobs with metadata (ID, payload, retry policy, timeout)\n- **Bounded Buffer**: A thread-safe ring buffer or channel with capacity N\n- **Worker Pool**: M fixed workers consuming from ",
+              "ttft_s": 0.059089,
+              "usage_source": "usage.completion_tokens"
+            }
+          ],
+          "server_generation_tps_end_to_end": 109.654,
+          "server_metric_delta": {
+            "vllm:generation_tokens_total": 512.0,
+            "vllm:prompt_tokens_total": 250.0,
+            "vllm:request_success_total": 1.0
+          },
+          "spec_decode_acceptance": null,
+          "sse_event_gap_ms": {
+            "count": 511,
+            "max": 15.599,
+            "min": 2.522,
+            "p50": 9.019,
+            "p95": 9.106
+          },
+          "success": "1/1",
+          "telemetry": {
+            "errors": [],
+            "gpu": {
+              "0": {
+                "gpu_util_pct": {
+                  "count": 17,
+                  "max": 98.0,
+                  "min": 73.0,
+                  "p50": 98.0,
+                  "p95": 98.0
+                },
+                "memory_total_mib": {
+                  "count": 17,
+                  "max": 97887.0,
+                  "min": 97887.0,
+                  "p50": 97887.0,
+                  "p95": 97887.0
+                },
+                "memory_used_mib": {
+                  "count": 17,
+                  "max": 91227.0,
+                  "min": 91227.0,
+                  "p50": 91227.0,
+                  "p95": 91227.0
+                },
+                "memory_util_pct": {
+                  "count": 17,
+                  "max": 38.0,
+                  "min": 29.0,
+                  "p50": 38.0,
+                  "p95": 38.0
+                },
+                "power_w": {
+                  "count": 17,
+                  "max": 210.76,
+                  "min": 202.79,
+                  "p50": 203.69,
+                  "p95": 210.76
+                },
+                "sm_clock_mhz": {
+                  "count": 17,
+                  "max": 2310.0,
+                  "min": 2302.0,
+                  "p50": 2310.0,
+                  "p95": 2310.0
+                },
+                "temperature_c": {
+                  "count": 17,
+                  "max": 39.0,
+                  "min": 38.0,
+                  "p50": 39.0,
+                  "p95": 39.0
+                }
+              },
+              "1": {
+                "gpu_util_pct": {
+                  "count": 17,
+                  "max": 98.0,
+                  "min": 73.0,
+                  "p50": 98.0,
+                  "p95": 98.0
+                },
+                "memory_total_mib": {
+                  "count": 17,
+                  "max": 97887.0,
+                  "min": 97887.0,
+                  "p50": 97887.0,
+                  "p95": 97887.0
+                },
+                "memory_used_mib": {
+                  "count": 17,
+                  "max": 91227.0,
+                  "min": 91227.0,
+                  "p50": 91227.0,
+                  "p95": 91227.0
+                },
+                "memory_util_pct": {
+                  "count": 17,
+                  "max": 34.0,
+                  "min": 30.0,
+                  "p50": 34.0,
+                  "p95": 34.0
+                },
+                "power_w": {
+                  "count": 17,
+                  "max": 211.0,
+                  "min": 204.21,
+                  "p50": 205.89,
+                  "p95": 211.0
+                },
+                "sm_clock_mhz": {
+                  "count": 17,
+                  "max": 2287.0,
+                  "min": 2280.0,
+                  "p50": 2287.0,
+                  "p95": 2287.0
+                },
+                "temperature_c": {
+                  "count": 17,
+                  "max": 41.0,
+                  "min": 39.0,
+                  "p50": 39.0,
+                  "p95": 41.0
+                }
+              },
+              "2": {
+                "gpu_util_pct": {
+                  "count": 17,
+                  "max": 98.0,
+                  "min": 73.0,
+                  "p50": 98.0,
+                  "p95": 98.0
+                },
+                "memory_total_mib": {
+                  "count": 17,
+                  "max": 97887.0,
+                  "min": 97887.0,
+                  "p50": 97887.0,
+                  "p95": 97887.0
+                },
+                "memory_used_mib": {
+                  "count": 17,
+                  "max": 91227.0,
+                  "min": 91227.0,
+                  "p50": 91227.0,
+                  "p95": 91227.0
+                },
+                "memory_util_pct": {
+                  "count": 17,
+                  "max": 41.0,
+                  "min": 31.0,
+                  "p50": 41.0,
+                  "p95": 41.0
+                },
+                "power_w": {
+                  "count": 17,
+                  "max": 201.88,
+                  "min": 193.09,
+                  "p50": 194.49,
+                  "p95": 201.88
+                },
+                "sm_clock_mhz": {
+                  "count": 17,
+                  "max": 2325.0,
+                  "min": 2325.0,
+                  "p50": 2325.0,
+                  "p95": 2325.0
+                },
+                "temperature_c": {
+                  "count": 17,
+                  "max": 39.0,
+                  "min": 38.0,
+                  "p50": 38.0,
+                  "p95": 39.0
+                }
+              },
+              "3": {
+                "gpu_util_pct": {
+                  "count": 17,
+                  "max": 98.0,
+                  "min": 97.0,
+                  "p50": 98.0,
+                  "p95": 98.0
+                },
+                "memory_total_mib": {
+                  "count": 17,
+                  "max": 97887.0,
+                  "min": 97887.0,
+                  "p50": 97887.0,
+                  "p95": 97887.0
+                },
+                "memory_used_mib": {
+                  "count": 17,
+                  "max": 91227.0,
+                  "min": 91227.0,
+                  "p50": 91227.0,
+                  "p95": 91227.0
+                },
+                "memory_util_pct": {
+                  "count": 17,
+                  "max": 28.0,
+                  "min": 27.0,
+                  "p50": 27.0,
+                  "p95": 28.0
+                },
+                "power_w": {
+                  "count": 17,
+                  "max": 226.3,
+                  "min": 217.12,
+                  "p50": 218.33,
+                  "p95": 226.3
+                },
+                "sm_clock_mhz": {
+                  "count": 17,
+                  "max": 2347.0,
+                  "min": 2340.0,
+                  "p50": 2340.0,
+                  "p95": 2347.0
+                },
+                "temperature_c": {
+                  "count": 17,
+                  "max": 40.0,
+                  "min": 39.0,
+                  "p50": 40.0,
+                  "p95": 40.0
+                }
+              }
+            },
+            "metric_gauges": {
+              "vllm:kv_cache_usage_perc": {
+                "count": 17,
+                "max": 0.0006,
+                "min": 0.0,
+                "p50": 0.0006,
+                "p95": 0.0006
+              },
+              "vllm:num_requests_running": {
+                "count": 17,
+                "max": 1.0,
+                "min": 0.0,
+                "p50": 1.0,
+                "p95": 1.0
+              },
+              "vllm:num_requests_waiting": {
+                "count": 17,
+                "max": 0.0,
+                "min": 0.0,
+                "p50": 0.0,
+                "p95": 0.0
+              }
+            }
+          },
+          "trial": 0,
+          "ttft_s": {
+            "count": 1,
+            "max": 0.0591,
+            "min": 0.0591,
+            "p50": 0.0591,
+            "p95": 0.0591
+          },
+          "wall_s": 4.669232
+        }
+      ]
+    },
+    {
+      "concurrency": 4,
+      "correctness": [
+        {
+          "checks": [
+            {
+              "actual": "alpha cache canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "alpha cache canary passed",
+              "index": 0,
+              "ok": true
+            },
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 1,
+              "ok": true
+            },
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 2,
+              "ok": true
+            },
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 3,
+              "ok": true
+            }
+          ],
+          "concurrency": 4,
+          "exact": "4/4",
+          "ok": true,
+          "wave": 0
+        },
+        {
+          "checks": [
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 0,
+              "ok": true
+            },
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 1,
+              "ok": true
+            },
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 2,
+              "ok": true
+            },
+            {
+              "actual": "391",
+              "error": null,
+              "exact": true,
+              "expected": "391",
+              "index": 3,
+              "ok": true
+            }
+          ],
+          "concurrency": 4,
+          "exact": "4/4",
+          "ok": true,
+          "wave": 1
+        },
+        {
+          "checks": [
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 0,
+              "ok": true
+            },
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 1,
+              "ok": true
+            },
+            {
+              "actual": "391",
+              "error": null,
+              "exact": true,
+              "expected": "391",
+              "index": 2,
+              "ok": true
+            },
+            {
+              "actual": "nebula-quartz-8815",
+              "error": null,
+              "exact": true,
+              "expected": "nebula-quartz-8815",
+              "index": 3,
+              "ok": true
+            }
+          ],
+          "concurrency": 4,
+          "exact": "4/4",
+          "ok": true,
+          "wave": 2
+        },
+        {
+          "checks": [
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 0,
+              "ok": true
+            },
+            {
+              "actual": "391",
+              "error": null,
+              "exact": true,
+              "expected": "391",
+              "index": 1,
+              "ok": true
+            },
+            {
+              "actual": "nebula-quartz-8815",
+              "error": null,
+              "exact": true,
+              "expected": "nebula-quartz-8815",
+              "index": 2,
+              "ok": true
+            },
+            {
+              "actual": "alpha cache canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "alpha cache canary passed",
+              "index": 3,
+              "ok": true
+            }
+          ],
+          "concurrency": 4,
+          "exact": "4/4",
+          "ok": true,
+          "wave": 3
+        },
+        {
+          "checks": [
+            {
+              "actual": "391",
+              "error": null,
+              "exact": true,
+              "expected": "391",
+              "index": 0,
+              "ok": true
+            },
+            {
+              "actual": "nebula-quartz-8815",
+              "error": null,
+              "exact": true,
+              "expected": "nebula-quartz-8815",
+              "index": 1,
+              "ok": true
+            },
+            {
+              "actual": "alpha cache canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "alpha cache canary passed",
+              "index": 2,
+              "ok": true
+            },
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 3,
+              "ok": true
+            }
+          ],
+          "concurrency": 4,
+          "exact": "4/4",
+          "ok": true,
+          "wave": 4
+        },
+        {
+          "checks": [
+            {
+              "actual": "nebula-quartz-8815",
+              "error": null,
+              "exact": true,
+              "expected": "nebula-quartz-8815",
+              "index": 0,
+              "ok": true
+            },
+            {
+              "actual": "alpha cache canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "alpha cache canary passed",
+              "index": 1,
+              "ok": true
+            },
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 2,
+              "ok": true
+            },
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 3,
+              "ok": true
+            }
+          ],
+          "concurrency": 4,
+          "exact": "4/4",
+          "ok": true,
+          "wave": 5
+        },
+        {
+          "checks": [
+            {
+              "actual": "alpha cache canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "alpha cache canary passed",
+              "index": 0,
+              "ok": true
+            },
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 1,
+              "ok": true
+            },
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 2,
+              "ok": true
+            },
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 3,
+              "ok": true
+            }
+          ],
+          "concurrency": 4,
+          "exact": "4/4",
+          "ok": true,
+          "wave": 6
+        },
+        {
+          "checks": [
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 0,
+              "ok": true
+            },
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 1,
+              "ok": true
+            },
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 2,
+              "ok": true
+            },
+            {
+              "actual": "391",
+              "error": null,
+              "exact": true,
+              "expected": "391",
+              "index": 3,
+              "ok": true
+            }
+          ],
+          "concurrency": 4,
+          "exact": "4/4",
+          "ok": true,
+          "wave": 7
+        },
+        {
+          "checks": [
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 0,
+              "ok": true
+            },
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 1,
+              "ok": true
+            },
+            {
+              "actual": "391",
+              "error": null,
+              "exact": true,
+              "expected": "391",
+              "index": 2,
+              "ok": true
+            },
+            {
+              "actual": "nebula-quartz-8815",
+              "error": null,
+              "exact": true,
+              "expected": "nebula-quartz-8815",
+              "index": 3,
+              "ok": true
+            }
+          ],
+          "concurrency": 4,
+          "exact": "4/4",
+          "ok": true,
+          "wave": 8
+        },
+        {
+          "checks": [
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 0,
+              "ok": true
+            },
+            {
+              "actual": "391",
+              "error": null,
+              "exact": true,
+              "expected": "391",
+              "index": 1,
+              "ok": true
+            },
+            {
+              "actual": "nebula-quartz-8815",
+              "error": null,
+              "exact": true,
+              "expected": "nebula-quartz-8815",
+              "index": 2,
+              "ok": true
+            },
+            {
+              "actual": "alpha cache canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "alpha cache canary passed",
+              "index": 3,
+              "ok": true
+            }
+          ],
+          "concurrency": 4,
+          "exact": "4/4",
+          "ok": true,
+          "wave": 9
+        }
+      ],
+      "summary": {
+        "aggregate_output_tps_after_first": {
+          "count": 1,
+          "max": 354.159,
+          "min": 354.159,
+          "p50": 354.159,
+          "p95": 354.159
+        },
+        "aggregate_output_tps_end_to_end": {
+          "count": 1,
+          "max": 350.982,
+          "min": 350.982,
+          "p50": 350.982,
+          "p95": 350.982
+        },
+        "aggregate_prompt_tps_to_first": {
+          "count": 1,
+          "max": 5055.747,
+          "min": 5055.747,
+          "p50": 5055.747,
+          "p95": 5055.747
+        },
+        "all_requests_succeeded": true,
+        "effective_itl_p50_ms": {
+          "count": 1,
+          "max": 11.0297,
+          "min": 11.0297,
+          "p50": 11.0297,
+          "p95": 11.0297
+        },
+        "server_generation_tps_end_to_end": {
+          "count": 1,
+          "max": 350.982,
+          "min": 350.982,
+          "p50": 350.982,
+          "p95": 350.982
+        },
+        "ttft_p50_s": {
+          "count": 1,
+          "max": 0.1982,
+          "min": 0.1982,
+          "p50": 0.1982,
+          "p95": 0.1982
+        }
+      },
+      "trials": [
+        {
+          "aggregate_output_tps_after_first": 354.159,
+          "aggregate_output_tps_end_to_end": 350.982,
+          "aggregate_prompt_tps_to_first": 5055.747,
+          "cache_config_info": [
+            {
+              "labels": {
+                "_block_size_resolved": "True",
+                "block_size": "4",
+                "cache_dtype": "fp8",
+                "calculate_kv_scales": "False",
+                "enable_prefix_caching": "True",
+                "engine": "0",
+                "gpu_memory_utilization": "0.9",
+                "hash_block_size": "None",
+                "is_attention_free": "False",
+                "kv_cache_dtype_skip_layers": "[]",
+                "kv_cache_max_concurrency": "5.094473744554001",
+                "kv_cache_memory_bytes": "None",
+                "kv_cache_size_tokens": "1335485",
+                "kv_offloading_backend": "native",
+                "kv_offloading_size": "256.0",
+                "kv_sharing_fast_prefill": "False",
+                "mamba_block_size": "None",
+                "mamba_cache_dtype": "auto",
+                "mamba_cache_mode": "none",
+                "mamba_page_size_padded": "None",
+                "mamba_ssm_cache_dtype": "auto",
+                "num_cpu_blocks": "None",
+                "num_gpu_blocks": "44434",
+                "num_gpu_blocks_override": "None",
+                "prefix_caching_hash_algo": "sha256",
+                "skip_page_size_padded": "None",
+                "sliding_window": "128",
+                "user_specified_block_size": "True",
+                "user_specified_mamba_block_size": "False"
+              },
+              "value": 1.0
+            }
+          ],
+          "concurrency": 4,
+          "decode_tokens_after_first": 2044,
+          "effective_itl_ms": {
+            "count": 4,
+            "max": 11.2501,
+            "min": 11.0295,
+            "p50": 11.0297,
+            "p95": 11.2501
+          },
+          "global_decode_window_s": 5.771421,
+          "global_prefill_to_first_window_s": 0.198586,
+          "output_tokens": 2048,
+          "per_stream_output_tps_after_first": {
+            "count": 4,
+            "max": 90.666,
+            "min": 88.888,
+            "p50": 90.665,
+            "p95": 90.666
+          },
+          "per_stream_prompt_tps_to_first": {
+            "count": 4,
+            "max": 3972.207,
+            "min": 1258.901,
+            "p50": 1268.686,
+            "p95": 3972.207
+          },
+          "prompt_tokens": {
+            "count": 4,
+            "max": 252.0,
+            "min": 250.0,
+            "p50": 251.0,
+            "p95": 252.0
+          },
+          "requests": [
+            {
+              "content_events": 512,
+              "decode_tokens": 511,
+              "decode_window_s": 5.636064,
+              "effective_itl_ms": 11.0295,
+              "end_to_end_s": 5.834826,
+              "error": null,
+              "finish_reason": "length",
+              "http_status": 200,
+              "index": 0,
+              "ok": true,
+              "output_tokens": 512,
+              "output_tps_after_first": 90.666,
+              "prompt_tokens": 250,
+              "prompt_tps_to_first": 1258.901,
+              "sse_event_gap_ms": {
+                "count": 511,
+                "max": 17.276,
+                "min": 4.643,
+                "p50": 11.054,
+                "p95": 11.359
+              },
+              "started_s": 3.8e-05,
+              "text": "# Bounded Concurrent Job Queue: A Comprehensive Implementation Guide\n\n## 1. Architectural Overview and Core Design Principles\n\nThe bounded concurrent job queue is a fundamental building block for distributed systems, microservices, and high-throughput applications. It decouples job production from job consumption, allowing you to control resource utilization, manage spikes in demand, and ensure reliable processing. This guide provides a production-grade implementation strategy covering every critical aspect",
+              "ttft_s": 0.198586,
+              "usage_source": "usage.completion_tokens"
+            },
+            {
+              "content_events": 512,
+              "decode_tokens": 511,
+              "decode_window_s": 5.636152,
+              "effective_itl_ms": 11.0297,
+              "end_to_end_s": 5.834539,
+              "error": null,
+              "finish_reason": "length",
+              "http_status": 200,
+              "index": 1,
+              "ok": true,
+              "output_tokens": 512,
+              "output_tps_after_first": 90.665,
+              "prompt_tokens": 252,
+              "prompt_tps_to_first": 1271.153,
+              "sse_event_gap_ms": {
+                "count": 511,
+                "max": 17.224,
+                "min": 4.695,
+                "p50": 11.053,
+                "p95": 11.361
+              },
+              "started_s": 0.000233,
+              "text": "# Bounded Concurrent Job Queue: A Comprehensive Implementation Guide\n\n## 1. Architectural Overview\n\nThe bounded concurrent job queue is a critical infrastructure component that decouples job submission from execution, providing controlled concurrency, resource protection, and resilience. This guide covers a production-grade implementation with the following core characteristics:\n\n- **Bounded capacity**: A fixed maximum number of pending jobs (both queued and in-flight)\n- **Concurrent execution**: Multiple w",
+              "ttft_s": 0.198245,
+              "usage_source": "usage.completion_tokens"
+            },
+            {
+              "content_events": 498,
+              "decode_tokens": 511,
+              "decode_window_s": 5.748802,
+              "effective_itl_ms": 11.2501,
+              "end_to_end_s": 5.812043,
+              "error": null,
+              "finish_reason": "length",
+              "http_status": 200,
+              "index": 2,
+              "ok": true,
+              "output_tokens": 512,
+              "output_tps_after_first": 88.888,
+              "prompt_tokens": 251,
+              "prompt_tps_to_first": 3972.207,
+              "sse_event_gap_ms": {
+                "count": 497,
+                "max": 127.547,
+                "min": 4.74,
+                "p50": 11.053,
+                "p95": 11.541
+              },
+              "started_s": 0.000128,
+              "text": "# Bounded Concurrent Job Queue: A Comprehensive Implementation Guide\n\n## 1. Architectural Overview and Core Principles\n\nThe bounded concurrent job queue is a fundamental building block for distributed systems, microservices, and high-throughput applications. It decouples job production from job consumption, allowing you to control resource utilization, manage burst traffic, and ensure reliable processing. This guide provides a production-grade implementation strategy covering all critical aspects: bounded c",
+              "ttft_s": 0.063189,
+              "usage_source": "usage.completion_tokens"
+            },
+            {
+              "content_events": 512,
+              "decode_tokens": 511,
+              "decode_window_s": 5.636174,
+              "effective_itl_ms": 11.0297,
+              "end_to_end_s": 5.834623,
+              "error": null,
+              "finish_reason": "length",
+              "http_status": 200,
+              "index": 3,
+              "ok": true,
+              "output_tokens": 512,
+              "output_tps_after_first": 90.664,
+              "prompt_tokens": 251,
+              "prompt_tps_to_first": 1266.219,
+              "sse_event_gap_ms": {
+                "count": 511,
+                "max": 17.193,
+                "min": 4.688,
+                "p50": 11.055,
+                "p95": 11.348
+              },
+              "started_s": 0.000337,
+              "text": "Here is a long, precise implementation guide for a bounded concurrent job queue, covering all requested aspects in depth.\n\n---\n\n## Implementation Guide: Bounded Concurrent Job Queue\n\n### 1. Core Architecture and Data Structures\n\nThe queue is built around a **bounded, thread-safe buffer** and a **fixed pool of worker goroutines** (or threads, depending on language). The fundamental components are:\n\n- **Job**: An immutable unit of work. Contains a unique `JobID`, a `Payload` (opaque bytes or structured data),",
+              "ttft_s": 0.198228,
+              "usage_source": "usage.completion_tokens"
+            }
+          ],
+          "server_generation_tps_end_to_end": 350.982,
+          "server_metric_delta": {
+            "vllm:generation_tokens_total": 2048.0,
+            "vllm:prompt_tokens_total": 1004.0,
+            "vllm:request_success_total": 4.0
+          },
+          "spec_decode_acceptance": null,
+          "sse_event_gap_ms": {
+            "count": 2030,
+            "max": 127.547,
+            "min": 4.643,
+            "p50": 11.054,
+            "p95": 11.379
+          },
+          "success": "4/4",
+          "telemetry": {
+            "errors": [],
+            "gpu": {
+              "0": {
+                "gpu_util_pct": {
+                  "count": 20,
+                  "max": 99.0,
+                  "min": 88.0,
+                  "p50": 99.0,
+                  "p95": 99.0
+                },
+                "memory_total_mib": {
+                  "count": 20,
+                  "max": 97887.0,
+                  "min": 97887.0,
+                  "p50": 97887.0,
+                  "p95": 97887.0
+                },
+                "memory_used_mib": {
+                  "count": 20,
+                  "max": 91227.0,
+                  "min": 91227.0,
+                  "p50": 91227.0,
+                  "p95": 91227.0
+                },
+                "memory_util_pct": {
+                  "count": 20,
+                  "max": 45.0,
+                  "min": 39.0,
+                  "p50": 43.0,
+                  "p95": 44.0
+                },
+                "power_w": {
+                  "count": 20,
+                  "max": 245.52,
+                  "min": 173.6,
+                  "p50": 243.46,
+                  "p95": 245.18
+                },
+                "sm_clock_mhz": {
+                  "count": 20,
+                  "max": 2310.0,
+                  "min": 2287.0,
+                  "p50": 2302.0,
+                  "p95": 2310.0
+                },
+                "temperature_c": {
+                  "count": 20,
+                  "max": 42.0,
+                  "min": 39.0,
+                  "p50": 41.0,
+                  "p95": 42.0
+                }
+              },
+              "1": {
+                "gpu_util_pct": {
+                  "count": 20,
+                  "max": 99.0,
+                  "min": 68.0,
+                  "p50": 99.0,
+                  "p95": 99.0
+                },
+                "memory_total_mib": {
+                  "count": 20,
+                  "max": 97887.0,
+                  "min": 97887.0,
+                  "p50": 97887.0,
+                  "p95": 97887.0
+                },
+                "memory_used_mib": {
+                  "count": 20,
+                  "max": 91227.0,
+                  "min": 91227.0,
+                  "p50": 91227.0,
+                  "p95": 91227.0
+                },
+                "memory_util_pct": {
+                  "count": 20,
+                  "max": 41.0,
+                  "min": 28.0,
+                  "p50": 40.0,
+                  "p95": 41.0
+                },
+                "power_w": {
+                  "count": 20,
+                  "max": 247.12,
+                  "min": 177.73,
+                  "p50": 243.39,
+                  "p95": 246.98
+                },
+                "sm_clock_mhz": {
+                  "count": 20,
+                  "max": 2287.0,
+                  "min": 2280.0,
+                  "p50": 2280.0,
+                  "p95": 2287.0
+                },
+                "temperature_c": {
+                  "count": 20,
+                  "max": 42.0,
+                  "min": 41.0,
+                  "p50": 41.5,
+                  "p95": 42.0
+                }
+              },
+              "2": {
+                "gpu_util_pct": {
+                  "count": 20,
+                  "max": 99.0,
+                  "min": 88.0,
+                  "p50": 99.0,
+                  "p95": 99.0
+                },
+                "memory_total_mib": {
+                  "count": 20,
+                  "max": 97887.0,
+                  "min": 97887.0,
+                  "p50": 97887.0,
+                  "p95": 97887.0
+                },
+                "memory_used_mib": {
+                  "count": 20,
+                  "max": 91227.0,
+                  "min": 91227.0,
+                  "p50": 91227.0,
+                  "p95": 91227.0
+                },
+                "memory_util_pct": {
+                  "count": 20,
+                  "max": 47.0,
+                  "min": 41.0,
+                  "p50": 46.0,
+                  "p95": 46.0
+                },
+                "power_w": {
+                  "count": 20,
+                  "max": 229.33,
+                  "min": 168.7,
+                  "p50": 226.67,
+                  "p95": 228.69
+                },
+                "sm_clock_mhz": {
+                  "count": 20,
+                  "max": 2332.0,
+                  "min": 2310.0,
+                  "p50": 2317.0,
+                  "p95": 2325.0
+                },
+                "temperature_c": {
+                  "count": 20,
+                  "max": 41.0,
+                  "min": 39.0,
+                  "p50": 40.0,
+                  "p95": 41.0
+                }
+              },
+              "3": {
+                "gpu_util_pct": {
+                  "count": 20,
+                  "max": 99.0,
+                  "min": 68.0,
+                  "p50": 99.0,
+                  "p95": 99.0
+                },
+                "memory_total_mib": {
+                  "count": 20,
+                  "max": 97887.0,
+                  "min": 97887.0,
+                  "p50": 97887.0,
+                  "p95": 97887.0
+                },
+                "memory_used_mib": {
+                  "count": 20,
+                  "max": 91227.0,
+                  "min": 91227.0,
+                  "p50": 91227.0,
+                  "p95": 91227.0
+                },
+                "memory_util_pct": {
+                  "count": 20,
+                  "max": 35.0,
+                  "min": 25.0,
+                  "p50": 34.0,
+                  "p95": 34.0
+                },
+                "power_w": {
+                  "count": 20,
+                  "max": 261.91,
+                  "min": 187.43,
+                  "p50": 260.24,
+                  "p95": 261.65
+                },
+                "sm_clock_mhz": {
+                  "count": 20,
+                  "max": 2347.0,
+                  "min": 2325.0,
+                  "p50": 2347.0,
+                  "p95": 2347.0
+                },
+                "temperature_c": {
+                  "count": 20,
+                  "max": 43.0,
+                  "min": 41.0,
+                  "p50": 43.0,
+                  "p95": 43.0
+                }
+              }
+            },
+            "metric_gauges": {
+              "vllm:kv_cache_usage_perc": {
+                "count": 20,
+                "max": 0.0026,
+                "min": 0.0,
+                "p50": 0.0025,
+                "p95": 0.0026
+              },
+              "vllm:num_requests_running": {
+                "count": 20,
+                "max": 4.0,
+                "min": 0.0,
+                "p50": 4.0,
+                "p95": 4.0
+              },
+              "vllm:num_requests_waiting": {
+                "count": 20,
+                "max": 0.0,
+                "min": 0.0,
+                "p50": 0.0,
+                "p95": 0.0
+              }
+            }
+          },
+          "trial": 0,
+          "ttft_s": {
+            "count": 4,
+            "max": 0.1986,
+            "min": 0.0632,
+            "p50": 0.1982,
+            "p95": 0.1986
+          },
+          "wall_s": 5.835063
+        }
+      ]
+    },
+    {
+      "concurrency": 8,
+      "correctness": [
+        {
+          "checks": [
+            {
+              "actual": "alpha cache canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "alpha cache canary passed",
+              "index": 0,
+              "ok": true
+            },
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 1,
+              "ok": true
+            },
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 2,
+              "ok": true
+            },
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 3,
+              "ok": true
+            },
+            {
+              "actual": "391",
+              "error": null,
+              "exact": true,
+              "expected": "391",
+              "index": 4,
+              "ok": true
+            },
+            {
+              "actual": "nebula-quartz-8815",
+              "error": null,
+              "exact": true,
+              "expected": "nebula-quartz-8815",
+              "index": 5,
+              "ok": true
+            },
+            {
+              "actual": "alpha cache canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "alpha cache canary passed",
+              "index": 6,
+              "ok": true
+            },
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 7,
+              "ok": true
+            }
+          ],
+          "concurrency": 8,
+          "exact": "8/8",
+          "ok": true,
+          "wave": 0
+        },
+        {
+          "checks": [
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 0,
+              "ok": true
+            },
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 1,
+              "ok": true
+            },
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 2,
+              "ok": true
+            },
+            {
+              "actual": "391",
+              "error": null,
+              "exact": true,
+              "expected": "391",
+              "index": 3,
+              "ok": true
+            },
+            {
+              "actual": "nebula-quartz-8815",
+              "error": null,
+              "exact": true,
+              "expected": "nebula-quartz-8815",
+              "index": 4,
+              "ok": true
+            },
+            {
+              "actual": "alpha cache canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "alpha cache canary passed",
+              "index": 5,
+              "ok": true
+            },
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 6,
+              "ok": true
+            },
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 7,
+              "ok": true
+            }
+          ],
+          "concurrency": 8,
+          "exact": "8/8",
+          "ok": true,
+          "wave": 1
+        },
+        {
+          "checks": [
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 0,
+              "ok": true
+            },
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 1,
+              "ok": true
+            },
+            {
+              "actual": "391",
+              "error": null,
+              "exact": true,
+              "expected": "391",
+              "index": 2,
+              "ok": true
+            },
+            {
+              "actual": "nebula-quartz-8815",
+              "error": null,
+              "exact": true,
+              "expected": "nebula-quartz-8815",
+              "index": 3,
+              "ok": true
+            },
+            {
+              "actual": "alpha cache canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "alpha cache canary passed",
+              "index": 4,
+              "ok": true
+            },
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 5,
+              "ok": true
+            },
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 6,
+              "ok": true
+            },
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 7,
+              "ok": true
+            }
+          ],
+          "concurrency": 8,
+          "exact": "8/8",
+          "ok": true,
+          "wave": 2
+        },
+        {
+          "checks": [
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 0,
+              "ok": true
+            },
+            {
+              "actual": "391",
+              "error": null,
+              "exact": true,
+              "expected": "391",
+              "index": 1,
+              "ok": true
+            },
+            {
+              "actual": "nebula-quartz-8815",
+              "error": null,
+              "exact": true,
+              "expected": "nebula-quartz-8815",
+              "index": 2,
+              "ok": true
+            },
+            {
+              "actual": "alpha cache canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "alpha cache canary passed",
+              "index": 3,
+              "ok": true
+            },
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 4,
+              "ok": true
+            },
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 5,
+              "ok": true
+            },
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 6,
+              "ok": true
+            },
+            {
+              "actual": "391",
+              "error": null,
+              "exact": true,
+              "expected": "391",
+              "index": 7,
+              "ok": true
+            }
+          ],
+          "concurrency": 8,
+          "exact": "8/8",
+          "ok": true,
+          "wave": 3
+        },
+        {
+          "checks": [
+            {
+              "actual": "391",
+              "error": null,
+              "exact": true,
+              "expected": "391",
+              "index": 0,
+              "ok": true
+            },
+            {
+              "actual": "nebula-quartz-8815",
+              "error": null,
+              "exact": true,
+              "expected": "nebula-quartz-8815",
+              "index": 1,
+              "ok": true
+            },
+            {
+              "actual": "alpha cache canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "alpha cache canary passed",
+              "index": 2,
+              "ok": true
+            },
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 3,
+              "ok": true
+            },
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 4,
+              "ok": true
+            },
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 5,
+              "ok": true
+            },
+            {
+              "actual": "391",
+              "error": null,
+              "exact": true,
+              "expected": "391",
+              "index": 6,
+              "ok": true
+            },
+            {
+              "actual": "nebula-quartz-8815",
+              "error": null,
+              "exact": true,
+              "expected": "nebula-quartz-8815",
+              "index": 7,
+              "ok": true
+            }
+          ],
+          "concurrency": 8,
+          "exact": "8/8",
+          "ok": true,
+          "wave": 4
+        },
+        {
+          "checks": [
+            {
+              "actual": "nebula-quartz-8815",
+              "error": null,
+              "exact": true,
+              "expected": "nebula-quartz-8815",
+              "index": 0,
+              "ok": true
+            },
+            {
+              "actual": "alpha cache canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "alpha cache canary passed",
+              "index": 1,
+              "ok": true
+            },
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 2,
+              "ok": true
+            },
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 3,
+              "ok": true
+            },
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 4,
+              "ok": true
+            },
+            {
+              "actual": "391",
+              "error": null,
+              "exact": true,
+              "expected": "391",
+              "index": 5,
+              "ok": true
+            },
+            {
+              "actual": "nebula-quartz-8815",
+              "error": null,
+              "exact": true,
+              "expected": "nebula-quartz-8815",
+              "index": 6,
+              "ok": true
+            },
+            {
+              "actual": "alpha cache canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "alpha cache canary passed",
+              "index": 7,
+              "ok": true
+            }
+          ],
+          "concurrency": 8,
+          "exact": "8/8",
+          "ok": true,
+          "wave": 5
+        },
+        {
+          "checks": [
+            {
+              "actual": "alpha cache canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "alpha cache canary passed",
+              "index": 0,
+              "ok": true
+            },
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 1,
+              "ok": true
+            },
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 2,
+              "ok": true
+            },
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 3,
+              "ok": true
+            },
+            {
+              "actual": "391",
+              "error": null,
+              "exact": true,
+              "expected": "391",
+              "index": 4,
+              "ok": true
+            },
+            {
+              "actual": "nebula-quartz-8815",
+              "error": null,
+              "exact": true,
+              "expected": "nebula-quartz-8815",
+              "index": 5,
+              "ok": true
+            },
+            {
+              "actual": "alpha cache canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "alpha cache canary passed",
+              "index": 6,
+              "ok": true
+            },
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 7,
+              "ok": true
+            }
+          ],
+          "concurrency": 8,
+          "exact": "8/8",
+          "ok": true,
+          "wave": 6
+        },
+        {
+          "checks": [
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 0,
+              "ok": true
+            },
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 1,
+              "ok": true
+            },
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 2,
+              "ok": true
+            },
+            {
+              "actual": "391",
+              "error": null,
+              "exact": true,
+              "expected": "391",
+              "index": 3,
+              "ok": true
+            },
+            {
+              "actual": "nebula-quartz-8815",
+              "error": null,
+              "exact": true,
+              "expected": "nebula-quartz-8815",
+              "index": 4,
+              "ok": true
+            },
+            {
+              "actual": "alpha cache canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "alpha cache canary passed",
+              "index": 5,
+              "ok": true
+            },
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 6,
+              "ok": true
+            },
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 7,
+              "ok": true
+            }
+          ],
+          "concurrency": 8,
+          "exact": "8/8",
+          "ok": true,
+          "wave": 7
+        },
+        {
+          "checks": [
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 0,
+              "ok": true
+            },
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 1,
+              "ok": true
+            },
+            {
+              "actual": "391",
+              "error": null,
+              "exact": true,
+              "expected": "391",
+              "index": 2,
+              "ok": true
+            },
+            {
+              "actual": "nebula-quartz-8815",
+              "error": null,
+              "exact": true,
+              "expected": "nebula-quartz-8815",
+              "index": 3,
+              "ok": true
+            },
+            {
+              "actual": "alpha cache canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "alpha cache canary passed",
+              "index": 4,
+              "ok": true
+            },
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 5,
+              "ok": true
+            },
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 6,
+              "ok": true
+            },
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 7,
+              "ok": true
+            }
+          ],
+          "concurrency": 8,
+          "exact": "8/8",
+          "ok": true,
+          "wave": 8
+        },
+        {
+          "checks": [
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 0,
+              "ok": true
+            },
+            {
+              "actual": "391",
+              "error": null,
+              "exact": true,
+              "expected": "391",
+              "index": 1,
+              "ok": true
+            },
+            {
+              "actual": "nebula-quartz-8815",
+              "error": null,
+              "exact": true,
+              "expected": "nebula-quartz-8815",
+              "index": 2,
+              "ok": true
+            },
+            {
+              "actual": "alpha cache canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "alpha cache canary passed",
+              "index": 3,
+              "ok": true
+            },
+            {
+              "actual": "bravo rank canary passed",
+              "error": null,
+              "exact": true,
+              "expected": "bravo rank canary passed",
+              "index": 4,
+              "ok": true
+            },
+            {
+              "actual": "56",
+              "error": null,
+              "exact": true,
+              "expected": "56",
+              "index": 5,
+              "ok": true
+            },
+            {
+              "actual": "tokyo",
+              "error": null,
+              "exact": true,
+              "expected": "tokyo",
+              "index": 6,
+              "ok": true
+            },
+            {
+              "actual": "391",
+              "error": null,
+              "exact": true,
+              "expected": "391",
+              "index": 7,
+              "ok": true
+            }
+          ],
+          "concurrency": 8,
+          "exact": "8/8",
+          "ok": true,
+          "wave": 9
+        }
+      ],
+      "summary": {
+        "aggregate_output_tps_after_first": {
+          "count": 1,
+          "max": 586.057,
+          "min": 586.057,
+          "p50": 586.057,
+          "p95": 586.057
+        },
+        "aggregate_output_tps_end_to_end": {
+          "count": 1,
+          "max": 581.554,
+          "min": 581.554,
+          "p50": 581.554,
+          "p95": 581.554
+        },
+        "aggregate_prompt_tps_to_first": {
+          "count": 1,
+          "max": 7308.634,
+          "min": 7308.634,
+          "p50": 7308.634,
+          "p95": 7308.634
+        },
+        "all_requests_succeeded": true,
+        "effective_itl_p50_ms": {
+          "count": 1,
+          "max": 13.2426,
+          "min": 13.2426,
+          "p50": 13.2426,
+          "p95": 13.2426
+        },
+        "server_generation_tps_end_to_end": {
+          "count": 1,
+          "max": 581.554,
+          "min": 581.554,
+          "p50": 581.554,
+          "p95": 581.554
+        },
+        "ttft_p50_s": {
+          "count": 1,
+          "max": 0.2749,
+          "min": 0.2749,
+          "p50": 0.2749,
+          "p95": 0.2749
+        }
+      },
+      "trials": [
+        {
+          "aggregate_output_tps_after_first": 586.057,
+          "aggregate_output_tps_end_to_end": 581.554,
+          "aggregate_prompt_tps_to_first": 7308.634,
+          "cache_config_info": [
+            {
+              "labels": {
+                "_block_size_resolved": "True",
+                "block_size": "4",
+                "cache_dtype": "fp8",
+                "calculate_kv_scales": "False",
+                "enable_prefix_caching": "True",
+                "engine": "0",
+                "gpu_memory_utilization": "0.9",
+                "hash_block_size": "None",
+                "is_attention_free": "False",
+                "kv_cache_dtype_skip_layers": "[]",
+                "kv_cache_max_concurrency": "5.094473744554001",
+                "kv_cache_memory_bytes": "None",
+                "kv_cache_size_tokens": "1335485",
+                "kv_offloading_backend": "native",
+                "kv_offloading_size": "256.0",
+                "kv_sharing_fast_prefill": "False",
+                "mamba_block_size": "None",
+                "mamba_cache_dtype": "auto",
+                "mamba_cache_mode": "none",
+                "mamba_page_size_padded": "None",
+                "mamba_ssm_cache_dtype": "auto",
+                "num_cpu_blocks": "None",
+                "num_gpu_blocks": "44434",
+                "num_gpu_blocks_override": "None",
+                "prefix_caching_hash_algo": "sha256",
+                "skip_page_size_padded": "None",
+                "sliding_window": "128",
+                "user_specified_block_size": "True",
+                "user_specified_mamba_block_size": "False"
+              },
+              "value": 1.0
+            }
+          ],
+          "concurrency": 8,
+          "decode_tokens_after_first": 4088,
+          "effective_itl_ms": {
+            "count": 8,
+            "max": 13.5942,
+            "min": 13.2424,
+            "p50": 13.2426,
+            "p95": 13.5942
+          },
+          "global_decode_window_s": 6.975433,
+          "global_prefill_to_first_window_s": 0.275564,
+          "output_tokens": 4096,
+          "per_stream_output_tps_after_first": {
+            "count": 8,
+            "max": 75.515,
+            "min": 73.561,
+            "p50": 75.513,
+            "p95": 75.515
+          },
+          "per_stream_prompt_tps_to_first": {
+            "count": 8,
+            "max": 3773.87,
+            "min": 908.625,
+            "p50": 916.33,
+            "p95": 3773.87
+          },
+          "prompt_tokens": {
+            "count": 8,
+            "max": 253.0,
+            "min": 250.0,
+            "p50": 252.0,
+            "p95": 253.0
+          },
+          "requests": [
+            {
+              "content_events": 512,
+              "decode_tokens": 511,
+              "decode_window_s": 6.766937,
+              "effective_itl_ms": 13.2425,
+              "end_to_end_s": 7.042335,
+              "error": null,
+              "finish_reason": "length",
+              "http_status": 200,
+              "index": 0,
+              "ok": true,
+              "output_tokens": 512,
+              "output_tps_after_first": 75.514,
+              "prompt_tokens": 250,
+              "prompt_tps_to_first": 908.625,
+              "sse_event_gap_ms": {
+                "count": 511,
+                "max": 19.91,
+                "min": 6.225,
+                "p50": 13.373,
+                "p95": 13.838
+              },
+              "started_s": 4.2e-05,
+              "text": "# Bounded Concurrent Job Queue: A Comprehensive Implementation Guide\n\n## 1. Architectural Overview and Core Design Principles\n\nThe bounded concurrent job queue is a fundamental building block for distributed systems, microservices, and high-throughput applications. It decouples job production from job consumption, allowing you to control resource utilization, manage burst traffic, and ensure reliable processing. This guide provides a production-grade implementation covering all critical aspects: bounded cap",
+              "ttft_s": 0.275141,
+              "usage_source": "usage.completion_tokens"
+            },
+            {
+              "content_events": 512,
+              "decode_tokens": 511,
+              "decode_window_s": 6.766853,
+              "effective_itl_ms": 13.2424,
+              "end_to_end_s": 7.042016,
+              "error": null,
+              "finish_reason": "length",
+              "http_status": 200,
+              "index": 1,
+              "ok": true,
+              "output_tokens": 512,
+              "output_tps_after_first": 75.515,
+              "prompt_tokens": 252,
+              "prompt_tps_to_first": 917.347,
+              "sse_event_gap_ms": {
+                "count": 511,
+                "max": 19.886,
+                "min": 6.326,
+                "p50": 13.385,
+                "p95": 13.833
+              },
+              "started_s": 0.000676,
+              "text": "Here is a long, precise implementation guide for a bounded concurrent job queue, covering retries, idempotency, backpressure, observability, and graceful shutdown. I will continue until the response limit is reached, building the guide incrementally.\n\n---\n\n## Part 1: Core Architecture and Boundedness\n\n### 1.1. The Problem Space\n\nA bounded concurrent job queue is a system that accepts units of work (jobs) from producers, executes them concurrently by a fixed pool of workers, and enforces a hard limit on the ",
+              "ttft_s": 0.274705,
+              "usage_source": "usage.completion_tokens"
+            },
+            {
+              "content_events": 512,
+              "decode_tokens": 511,
+              "decode_window_s": 6.767296,
+              "effective_itl_ms": 13.2432,
+              "end_to_end_s": 7.042843,
+              "error": null,
+              "finish_reason": "length",
+              "http_status": 200,
+              "index": 2,
+              "ok": true,
+              "output_tokens": 512,
+              "output_tps_after_first": 75.51,
+              "prompt_tokens": 251,
+              "prompt_tps_to_first": 912.337,
+              "sse_event_gap_ms": {
+                "count": 511,
+                "max": 19.836,
+                "min": 6.531,
+                "p50": 13.374,
+                "p95": 13.826
+              },
+              "started_s": 0.000139,
+              "text": "# Bounded Concurrent Job Queue: A Comprehensive Implementation Guide\n\n## 1. Architectural Overview and Core Principles\n\nA bounded concurrent job queue is a critical infrastructure component that decouples job production from consumption while enforcing resource limits. The fundamental challenge is balancing throughput, latency, and reliability under varying load conditions. This guide provides a production-grade implementation strategy covering all operational aspects.\n\n### 1.1 System Components\n\nThe system",
+              "ttft_s": 0.275118,
+              "usage_source": "usage.completion_tokens"
+            },
+            {
+              "content_events": 512,
+              "decode_tokens": 511,
+              "decode_window_s": 6.766862,
+              "effective_itl_ms": 13.2424,
+              "end_to_end_s": 7.042034,
+              "error": null,
+              "finish_reason": "length",
+              "http_status": 200,
+              "index": 3,
+              "ok": true,
+              "output_tokens": 512,
+              "output_tps_after_first": 75.515,
+              "prompt_tokens": 251,
+              "prompt_tps_to_first": 913.526,
+              "sse_event_gap_ms": {
+                "count": 511,
+                "max": 20.049,
+                "min": 6.258,
+                "p50": 13.39,
+                "p95": 13.887
+              },
+              "started_s": 0.000555,
+              "text": "Here is a long, precise implementation guide for a bounded concurrent job queue, covering retries, idempotency, backpressure, observability, and graceful shutdown. I will structure it as a production-grade design document, with concrete pseudocode, invariants, and failure-mode analysis. The queue is assumed to be in-process (e.g., for a single service) but with patterns that extend to distributed systems.\n\n---\n\n## 1. Core Architecture and Invariants\n\n### 1.1. Definition of a \"Job\"\nA job is an immutable unit",
+              "ttft_s": 0.274759,
+              "usage_source": "usage.completion_tokens"
+            },
+            {
+              "content_events": 504,
+              "decode_tokens": 511,
+              "decode_window_s": 6.767043,
+              "effective_itl_ms": 13.2427,
+              "end_to_end_s": 7.042661,
+              "error": null,
+              "finish_reason": "length",
+              "http_status": 200,
+              "index": 4,
+              "ok": true,
+              "output_tokens": 512,
+              "output_tps_after_first": 75.513,
+              "prompt_tokens": 253,
+              "prompt_tps_to_first": 919.217,
+              "sse_event_gap_ms": {
+                "count": 503,
+                "max": 31.788,
+                "min": 6.278,
+                "p50": 13.382,
+                "p95": 13.899
+              },
+              "started_s": 0.000223,
+              "text": "# Bounded Concurrent Job Queue: A Comprehensive Implementation Guide\n\n## 1. Architectural Overview\n\nThe bounded concurrent job queue is a critical infrastructure component that decouples job production from consumption while enforcing resource limits. This guide covers a production-grade implementation with the following core characteristics:\n\n- **Bounded capacity**: A fixed maximum number of pending jobs (e.g., 10,000)\n- **Concurrent workers**: A configurable pool of consumer goroutines/threads\n- **Retry s",
+              "ttft_s": 0.275234,
+              "usage_source": "usage.completion_tokens"
+            },
+            {
+              "content_events": 512,
+              "decode_tokens": 511,
+              "decode_window_s": 6.767224,
+              "effective_itl_ms": 13.2431,
+              "end_to_end_s": 7.042805,
+              "error": null,
+              "finish_reason": "length",
+              "http_status": 200,
+              "index": 5,
+              "ok": true,
+              "output_tokens": 512,
+              "output_tps_after_first": 75.511,
+              "prompt_tokens": 252,
+              "prompt_tps_to_first": 915.312,
+              "sse_event_gap_ms": {
+                "count": 511,
+                "max": 19.846,
+                "min": 6.348,
+                "p50": 13.378,
+                "p95": 13.851
+              },
+              "started_s": 0.00029,
+              "text": "# Bounded Concurrent Job Queue: A Comprehensive Implementation Guide\n\n## 1. Architectural Overview\n\nThe bounded concurrent job queue is a critical infrastructure component that decouples job submission from execution, providing controlled concurrency, resource protection, and failure resilience. This guide covers a production-grade implementation with the following core characteristics:\n\n- **Bounded capacity**: Both the queue and the in-flight execution set are strictly limited.\n- **Concurrent workers**: A ",
+              "ttft_s": 0.275316,
+              "usage_source": "usage.completion_tokens"
+            },
+            {
+              "content_events": 492,
+              "decode_tokens": 511,
+              "decode_window_s": 6.766943,
+              "effective_itl_ms": 13.2425,
+              "end_to_end_s": 7.041791,
+              "error": null,
+              "finish_reason": "length",
+              "http_status": 200,
+              "index": 6,
+              "ok": true,
+              "output_tokens": 512,
+              "output_tps_after_first": 75.514,
+              "prompt_tokens": 252,
+              "prompt_tps_to_first": 917.574,
+              "sse_event_gap_ms": {
+                "count": 491,
+                "max": 31.616,
+                "min": 6.388,
+                "p50": 13.388,
+                "p95": 17.618
+              },
+              "started_s": 0.000479,
+              "text": "# Bounded Concurrent Job Queue: A Comprehensive Implementation Guide\n\n## 1. Architectural Overview\n\nThe bounded concurrent job queue is a critical infrastructure component that decouples job submission from execution, providing controlled concurrency, resource protection, and failure isolation. This guide presents a production-grade implementation in Go, chosen for its excellent concurrency primitives, but the patterns translate to any language with goroutines/threads and channels/queues.\n\n### 1.1 Core Desi",
+              "ttft_s": 0.274637,
+              "usage_source": "usage.completion_tokens"
+            },
+            {
+              "content_events": 496,
+              "decode_tokens": 511,
+              "decode_window_s": 6.946644,
+              "effective_itl_ms": 13.5942,
+              "end_to_end_s": 7.013794,
+              "error": null,
+              "finish_reason": "length",
+              "http_status": 200,
+              "index": 7,
+              "ok": true,
+              "output_tokens": 512,
+              "output_tps_after_first": 73.561,
+              "prompt_tokens": 253,
+              "prompt_tps_to_first": 3773.87,
+              "sse_event_gap_ms": {
+                "count": 495,
+                "max": 201.114,
+                "min": 6.17,
+                "p50": 13.382,
+                "p95": 14.122
+              },
+              "started_s": 0.000357,
+              "text": "# Bounded Concurrent Job Queue: A Comprehensive Implementation Guide\n\n## 1. Architectural Overview\n\nThe bounded concurrent job queue is a critical infrastructure component that decouples job producers from consumers while enforcing resource limits. This guide provides a production-grade implementation covering all operational concerns.\n\n### 1.1 Core Design Principles\n\n- **Boundedness**: The queue has a maximum capacity, preventing unbounded memory growth\n- **Concurrency**: Multiple workers process jobs simu",
+              "ttft_s": 0.06704,
+              "usage_source": "usage.completion_tokens"
+            }
+          ],
+          "server_generation_tps_end_to_end": 581.554,
+          "server_metric_delta": {
+            "vllm:generation_tokens_total": 4096.0,
+            "vllm:prompt_tokens_total": 2014.0,
+            "vllm:request_success_total": 8.0
+          },
+          "spec_decode_acceptance": null,
+          "sse_event_gap_ms": {
+            "count": 4044,
+            "max": 201.114,
+            "min": 6.17,
+            "p50": 13.382,
+            "p95": 13.866
+          },
+          "success": "8/8",
+          "telemetry": {
+            "errors": [],
+            "gpu": {
+              "0": {
+                "gpu_util_pct": {
+                  "count": 24,
+                  "max": 99.0,
+                  "min": 63.0,
+                  "p50": 99.0,
+                  "p95": 99.0
+                },
+                "memory_total_mib": {
+                  "count": 24,
+                  "max": 97887.0,
+                  "min": 97887.0,
+                  "p50": 97887.0,
+                  "p95": 97887.0
+                },
+                "memory_used_mib": {
+                  "count": 24,
+                  "max": 91227.0,
+                  "min": 91227.0,
+                  "p50": 91227.0,
+                  "p95": 91227.0
+                },
+                "memory_util_pct": {
+                  "count": 24,
+                  "max": 48.0,
+                  "min": 29.0,
+                  "p50": 46.0,
+                  "p95": 48.0
+                },
+                "power_w": {
+                  "count": 24,
+                  "max": 270.57,
+                  "min": 251.33,
+                  "p50": 266.64,
+                  "p95": 270.42
+                },
+                "sm_clock_mhz": {
+                  "count": 24,
+                  "max": 2317.0,
+                  "min": 2295.0,
+                  "p50": 2310.0,
+                  "p95": 2317.0
+                },
+                "temperature_c": {
+                  "count": 24,
+                  "max": 44.0,
+                  "min": 42.0,
+                  "p50": 43.0,
+                  "p95": 44.0
+                }
+              },
+              "1": {
+                "gpu_util_pct": {
+                  "count": 24,
+                  "max": 100.0,
+                  "min": 92.0,
+                  "p50": 99.0,
+                  "p95": 99.0
+                },
+                "memory_total_mib": {
+                  "count": 24,
+                  "max": 97887.0,
+                  "min": 97887.0,
+                  "p50": 97887.0,
+                  "p95": 97887.0
+                },
+                "memory_used_mib": {
+                  "count": 24,
+                  "max": 91227.0,
+                  "min": 91227.0,
+                  "p50": 91227.0,
+                  "p95": 91227.0
+                },
+                "memory_util_pct": {
+                  "count": 24,
+                  "max": 45.0,
+                  "min": 28.0,
+                  "p50": 44.0,
+                  "p95": 45.0
+                },
+                "power_w": {
+                  "count": 24,
+                  "max": 273.84,
+                  "min": 254.09,
+                  "p50": 267.6,
+                  "p95": 273.29
+                },
+                "sm_clock_mhz": {
+                  "count": 24,
+                  "max": 2287.0,
+                  "min": 2272.0,
+                  "p50": 2287.0,
+                  "p95": 2287.0
+                },
+                "temperature_c": {
+                  "count": 24,
+                  "max": 44.0,
+                  "min": 41.0,
+                  "p50": 43.5,
+                  "p95": 44.0
+                }
+              },
+              "2": {
+                "gpu_util_pct": {
+                  "count": 24,
+                  "max": 99.0,
+                  "min": 63.0,
+                  "p50": 99.0,
+                  "p95": 99.0
+                },
+                "memory_total_mib": {
+                  "count": 24,
+                  "max": 97887.0,
+                  "min": 97887.0,
+                  "p50": 97887.0,
+                  "p95": 97887.0
+                },
+                "memory_used_mib": {
+                  "count": 24,
+                  "max": 91227.0,
+                  "min": 91227.0,
+                  "p50": 91227.0,
+                  "p95": 91227.0
+                },
+                "memory_util_pct": {
+                  "count": 24,
+                  "max": 49.0,
+                  "min": 30.0,
+                  "p50": 48.0,
+                  "p95": 49.0
+                },
+                "power_w": {
+                  "count": 24,
+                  "max": 252.44,
+                  "min": 237.09,
+                  "p50": 246.56,
+                  "p95": 252.38
+                },
+                "sm_clock_mhz": {
+                  "count": 24,
+                  "max": 2325.0,
+                  "min": 2302.0,
+                  "p50": 2325.0,
+                  "p95": 2325.0
+                },
+                "temperature_c": {
+                  "count": 24,
+                  "max": 43.0,
+                  "min": 41.0,
+                  "p50": 42.0,
+                  "p95": 43.0
+                }
+              },
+              "3": {
+                "gpu_util_pct": {
+                  "count": 24,
+                  "max": 100.0,
+                  "min": 67.0,
+                  "p50": 99.0,
+                  "p95": 99.0
+                },
+                "memory_total_mib": {
+                  "count": 24,
+                  "max": 97887.0,
+                  "min": 97887.0,
+                  "p50": 97887.0,
+                  "p95": 97887.0
+                },
+                "memory_used_mib": {
+                  "count": 24,
+                  "max": 91227.0,
+                  "min": 91227.0,
+                  "p50": 91227.0,
+                  "p95": 91227.0
+                },
+                "memory_util_pct": {
+                  "count": 24,
+                  "max": 39.0,
+                  "min": 25.0,
+                  "p50": 38.0,
+                  "p95": 39.0
+                },
+                "power_w": {
+                  "count": 24,
+                  "max": 284.27,
+                  "min": 257.56,
+                  "p50": 270.33,
+                  "p95": 283.5
+                },
+                "sm_clock_mhz": {
+                  "count": 24,
+                  "max": 2392.0,
+                  "min": 2332.0,
+                  "p50": 2358.5,
+                  "p95": 2385.0
+                },
+                "temperature_c": {
+                  "count": 24,
+                  "max": 45.0,
+                  "min": 42.0,
+                  "p50": 44.0,
+                  "p95": 45.0
+                }
+              }
+            },
+            "metric_gauges": {
+              "vllm:kv_cache_usage_perc": {
+                "count": 24,
+                "max": 0.0052,
+                "min": 0.0,
+                "p50": 0.005,
+                "p95": 0.0052
+              },
+              "vllm:num_requests_running": {
+                "count": 24,
+                "max": 8.0,
+                "min": 0.0,
+                "p50": 8.0,
+                "p95": 8.0
+              },
+              "vllm:num_requests_waiting": {
+                "count": 24,
+                "max": 0.0,
+                "min": 0.0,
+                "p50": 0.0,
+                "p95": 0.0
+              }
+            }
+          },
+          "trial": 0,
+          "ttft_s": {
+            "count": 8,
+            "max": 0.2753,
+            "min": 0.067,
+            "p50": 0.2749,
+            "p95": 0.2753
+          },
+          "wall_s": 7.0432
+        }
+      ]
+    }
+  ],
+  "metric_info": {
+    "vllm:cache_config_info": [
+      {
+        "labels": {
+          "_block_size_resolved": "True",
+          "block_size": "4",
+          "cache_dtype": "fp8",
+          "calculate_kv_scales": "False",
+          "enable_prefix_caching": "True",
+          "engine": "0",
+          "gpu_memory_utilization": "0.9",
+          "hash_block_size": "None",
+          "is_attention_free": "False",
+          "kv_cache_dtype_skip_layers": "[]",
+          "kv_cache_max_concurrency": "5.094473744554001",
+          "kv_cache_memory_bytes": "None",
+          "kv_cache_size_tokens": "1335485",
+          "kv_offloading_backend": "native",
+          "kv_offloading_size": "256.0",
+          "kv_sharing_fast_prefill": "False",
+          "mamba_block_size": "None",
+          "mamba_cache_dtype": "auto",
+          "mamba_cache_mode": "none",
+          "mamba_page_size_padded": "None",
+          "mamba_ssm_cache_dtype": "auto",
+          "num_cpu_blocks": "None",
+          "num_gpu_blocks": "44434",
+          "num_gpu_blocks_override": "None",
+          "prefix_caching_hash_algo": "sha256",
+          "skip_page_size_padded": "None",
+          "sliding_window": "128",
+          "user_specified_block_size": "True",
+          "user_specified_mamba_block_size": "False"
+        },
+        "value": 1.0
+      }
+    ]
+  },
+  "ok": true,
+  "profile": {
+    "async_scheduling": "on",
+    "backend": "flashinfer-mla-sparse-dsv4-marlin",
+    "base_url": "http://127.0.0.1:8000/v1",
+    "cudagraph_mode": "FULL_AND_PIECEWISE",
+    "dcp": 1,
+    "dcp_interleave": -1,
+    "dspark_tokens": 0,
+    "expert_parallel": "on",
+    "gpu_memory_utilization": 0.9,
+    "image_tag": "vllm-dspark-runtime:stock-sm120-vllm-0.25.1-marlin-c-tmp-v1",
+    "kv_dtype": "fp8",
+    "label": "stock-sm120-marlin-fixed",
+    "max_num_batched_tokens": 8192,
+    "max_num_seqs": 512,
+    "model": "deepseek-v4-flash-dspark",
+    "runtime_commit": "78cb4ad629562f99c586aee3e899f92b1c330c72",
+    "tensor_parallel_size": 4
+  },
+  "schema_version": 1,
+  "settings": {
+    "concurrency": [
+      1,
+      4,
+      8
+    ],
+    "correctness_waves": 10,
+    "early_stop_allowed": false,
+    "measurement_mode": "decode",
+    "output_tokens": 512,
+    "prompt_file": null,
+    "prompt_sha256": null,
+    "prompt_words": 128,
+    "sample_interval": 0.2,
+    "trials": 1,
+    "usage_required": true,
+    "warmup_tokens": 64,
+    "warmups": 1
+  },
+  "started_at": "2026-08-11T17:41:09.165879+00:00"
+}
